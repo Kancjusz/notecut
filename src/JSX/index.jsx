@@ -47,6 +47,7 @@ class App extends Component
         this.getTileIdByFolderId = this.getTileIdByFolderId.bind(this);
         this.setToStorage = this.setToStorage.bind(this);
         this.checkFreeSpace = this.checkFreeSpace.bind(this);
+        this.updateDimensions = this.updateDimensions.bind(this);
 
         this.main = createRef();
     }
@@ -468,10 +469,20 @@ class App extends Component
         localStorage.setItem("folders",JSON.stringify(folders));
     }
 
+    updateDimensions()
+    {
+        this.setState({ tileWidth: window.innerWidth/20, tileHeight: (window.innerHeight*0.8)/8 });
+    }
+
     componentDidMount()
     {
+        window.addEventListener('resize', this.updateDimensions);
         if(!this.state.tiles.length > 0)
             this.createTilesArray(160);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.updateDimensions);
     }
 
     componentDidUpdate()

@@ -54,7 +54,10 @@ class Folder extends Component{
     onMouseMove(e)
     {
         this.setState({isClick:false})
-        if(this.state.mouseDown && (e.pageX + 48 < window.innerWidth) && (e.pageY + 47 < document.body.scrollHeight) && (e.pageY - 47 > 186))
+        if(this.state.mouseDown && (e.pageX + this.props.width/2 < window.innerWidth) 
+            && (e.pageX - this.props.width/2 > 0) 
+            && (e.pageY + this.props.height/2 < document.body.scrollHeight) 
+            && (e.pageY - this.props.height/2 > window.innerHeight*0.2))
             this.setPosition(e);
     }
 
