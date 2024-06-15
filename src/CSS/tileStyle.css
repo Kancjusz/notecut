@@ -1,0 +1,31 @@
+.tile{
+    transition: all 0.2s;
+
+    height: 90px;
+    width: 80px;
+}
+
+.tileInside{
+    transition: all 0.2s;
+
+    background-color: grey;
+}
+
+.tileInside > img{
+    width: 60%;
+
+    position: relative;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+
+    z-index: 0;
+}
+
+.over{
+    background-color: rgba(240, 255, 255, 0.411);
+}
+
+.grid{
+    background-color: rgba(240, 255, 255, 0.411);
+}

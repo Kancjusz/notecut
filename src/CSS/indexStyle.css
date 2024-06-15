@@ -1,0 +1,156 @@
+body{
+    margin:0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: grey;
+
+}
+
+main{
+    height: 100%;
+    width: 100vw;
+
+    display: flex;
+    flex-wrap: wrap;
+}
+
+header{
+    width: 100%;
+    height: 20%;
+    background-color: rgba(0, 0, 0, 0.404);
+
+    padding: 0;
+    border-radius: 0 0 20px 20px;
+
+    z-index: 20;
+
+    box-shadow: 0px 1px 30px black;
+}
+
+header h1{
+    width: 40%;
+
+    color: white;
+    font-variant: small-caps;
+    font-size: 120px;
+
+    position: relative;
+    left: 50px;
+    top: 50%;
+    
+    transform: translate(-0,-50%);
+
+    margin: 0;
+
+    text-shadow: 5px 5px 0px rgba(0, 0, 0, 0.75), 10px 10px 0px rgba(255, 255, 255, 0.5), 15px 15px 0px rgba(0, 0, 0, 0.25), 20px 20px 0px rgba(255, 255, 255, 0.1);
+
+    float:left;
+}
+
+#addShortcut{
+    width: 20%;
+
+    transition: all 0.2s;
+
+    padding: 20px 20px;
+    border-radius: 100px 10px 100px 10px;
+
+    text-align: center;
+    font-size: 32px;
+
+    background-color: darkgray;
+
+    position: relative;
+    right: 10%;
+    top: 50%;
+    transform: translate(-0%,-50%);
+
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+
+    float: right;
+}
+
+#addShortcut:hover{
+    background-color: gainsboro;
+    cursor: pointer;
+}
+
+#addShortcut p{
+    margin: 0;
+}
+
+#addFolder{
+    width: 20%;
+
+    transition: all 0.2s;
+
+    padding: 20px 20px;
+    border-radius: 100px 10px 100px 10px;
+
+    text-align: center;
+    font-size: 32px;
+
+    background-color: darkgray;
+
+    position: relative;
+    right: 15%;
+    top: 50%;
+    transform: translate(-0,-50%);
+
+
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+
+    float: right;
+}
+
+#addFolder:hover{
+    background-color: gainsboro;
+    cursor: pointer;
+}
+
+#addFolder p{
+    margin: 0;
+}
+
+.subText{
+    font-size: 30px;
+    margin-top: 100px;
+}
+
+.noFreeSpace{
+    transition: all 2s;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+
+    width: 300px;
+    height: 100px;
+
+    background-color: rgb(194, 50, 50);
+
+    border-radius: 20px;
+
+    opacity: 0;
+
+    z-index: -1;
+}
+
+.noFreeSpace > p{
+    margin: 0;
+
+    text-align: center;
+
+    position: relative;
+    top: 50%;
+    transform: translate(0,-50%);
+
+    color: rgb(110, 0, 0);
+}
+
+.show{
+    opacity: 1;
+
+    z-index: 50;
+}

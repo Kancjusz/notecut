@@ -1,0 +1,43 @@
+body{
+    -moz-window-dragging: no-drag;
+}
+
+.shortcut{
+    left: 50%;
+    top: 50%;
+
+    display: block;
+
+    background-color: black;
+    text-decoration: none;
+    text-align: center;
+
+    border-radius: 15px;
+
+    z-index: 1;
+
+    margin:0px
+}
+
+.shortcut > img{
+    width: 70%;
+
+    background-color: white;
+    border-radius: 5px;
+    padding: 2px;
+}
+
+.shortcut > p{
+    width: 85%;
+
+    position: relative;
+    left: 50%;
+    transform: translate(-50%,0);
+
+    font-size: 14px;
+    margin: 0;
+    color: black;
+
+    background-color: white;
+    border-radius: 5px;
+}
