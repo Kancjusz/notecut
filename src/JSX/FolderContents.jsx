@@ -33,6 +33,8 @@ class FolderContents extends Component
         this.setState({pageId:this.state.pageId+1})
     }
 
+
+
     render()
     {
         let pages = new Array(Math.ceil(this.props.shortcuts.length / 4));
@@ -48,7 +50,7 @@ class FolderContents extends Component
                 link={sc.link} 
                 note={sc.note}
                 color={sc.color}
-                setDropShortcutId={()=>this.props.setDropShortcutId(true,sc.id)}
+                setDropShortcutId={(autoChangeTile)=>this.props.setDropShortcutId(true,sc.id,autoChangeTile)}
                 height={this.props.height}
                 width={this.props.width}
                 isGrabbed={(e)=>this.props.isGrabbed(e)}

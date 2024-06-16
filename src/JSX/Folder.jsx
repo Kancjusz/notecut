@@ -66,10 +66,15 @@ class Folder extends Component{
         let isWidth = false;
         let isHeight = false;
 
+        var bodyRect = document.body.getBoundingClientRect();
+        var elemRect = this.folder.current.getBoundingClientRect();
+        var leftOffset = elemRect.left - bodyRect.left;
+        var topOffset = elemRect.top - bodyRect.top;
+
         if(this.folder.current !== null)
         {
-            isWidth = this.folder.current.offsetLeft + 276 > window.innerWidth;
-            isHeight = this.folder.current.offsetTop + 226 > Math.ceil(160 / Math.floor(window.innerWidth / 96)) * 93;
+            isWidth = leftOffset + 276 > window.innerWidth;
+            isHeight = topOffset + 226 > Math.ceil(160 / Math.floor(window.innerWidth / 96)) * 93;
             this.setState({isScrollHeight: isHeight});
         }
 
@@ -81,16 +86,15 @@ class Folder extends Component{
         let checkWidth = false;
 
         if(!isHeight)
-            checkHeight = e.pageY < this.folder.current.offsetTop || e.pageY > this.folder.current.offsetTop + folder.offsetHeight; 
+            checkHeight = e.pageY < topOffset || e.pageY > topOffset + folder.offsetHeight; 
         else
-            checkHeight = e.pageY < this.folder.current.offsetTop - folder.offsetHeight + this.folder.current.offsetHeight || e.pageY > this.folder.current.offsetTop + this.folder.current.offsetHeight;
+            checkHeight = e.pageY < topOffset - folder.offsetHeight + this.folder.current.offsetHeight || e.pageY > topOffset + this.folder.current.offsetHeight;
 
         if(!isWidth)
-            checkWidth = e.pageX < this.folder.current.offsetLeft || e.pageX > this.folder.current.offsetLeft + folder.offsetWidth;
+            checkWidth = e.pageX < leftOffset || e.pageX > leftOffset + folder.offsetWidth;
         else
-            checkWidth = e.pageX < this.folder.current.offsetLeft - folder.offsetWidth + this.folder.current.offsetWidth || e.pageX > this.folder.current.offsetLeft + this.folder.current.offsetWidth;
+            checkWidth = e.pageX < leftOffset - folder.offsetWidth + this.folder.current.offsetWidth || e.pageX > leftOffset + this.folder.current.offsetWidth;
         
-        console.log(this.folder.current.offsetTop + folder.offsetHeight - this.folder.current.offsetHeight, e.pageY);
         if(checkHeight || checkWidth)
             this.setState({showContents:false});
     }
@@ -111,6 +115,9 @@ class Folder extends Component{
     {
         let descriptionTab = this.props.note.split(" ");
         let description = "";
+        let outside = this.state.yPos < window.innerHeight*0.3 || this.state.yPos > window.innerHeight*0.9
+                        || this.state.xPos < window.innerWidth*0.1 || this.state.xPos > window.innerWidth*0.9;
+
         for(let i = 0; i < descriptionTab.length;i++)
         {
             description += descriptionTab[i] + " ";
@@ -149,7 +156,10 @@ class Folder extends Component{
 
                     if(this.state.mouseDown)
                     {
-                        this.props.setDropShortcutId();
+                        if(outside)
+                            this.props.setDropShortcutId(false,undefined,true);
+                        else
+                            this.props.setDropShortcutId(false,undefined,false);
                     }
                     this.props.isGrabbed(false);
                     this.setState({mouseDown:false});
@@ -157,13 +167,16 @@ class Folder extends Component{
 
                 style={
                     this.state.mouseDown
-                    ? {backgroundColor:this.props.color, height:this.props.height, width:this.props.width, position:"absolute", top:this.state.yPos/window.innerHeight*100+"%", left:this.state.xPos/window.innerWidth*100+"%", transform:"translate(-50%,-50%)"} 
+                    ? {
+                        backgroundColor:this.props.color, height:this.props.height, width:this.props.width, position:"absolute", 
+                        top:(this.state.yPos ) - window.innerHeight*0.3+"px", left:(this.state.xPos )- window.innerWidth*0.1+"px", transform:"translate(-50%,-50%)"
+                    } 
                     : {backgroundColor:this.props.color, height:this.props.height, width:this.props.width}
                 }
             >
                 {this.state.showContents && <FolderContents
                     shortcuts={this.props.shortcuts}
-                    setDropShortcutId={(inFolder,id)=>{this.props.setDropShortcutId(inFolder,id); this.setState({showContents:false})}}
+                    setDropShortcutId={(inFolder,id,autoChangeTile)=>{this.props.setDropShortcutId(inFolder,id,autoChangeTile); this.setState({showContents:false})}}
                     height={this.props.height}
                     width={this.props.width}
                     isGrabbed={(e)=>this.props.isGrabbed(e)}

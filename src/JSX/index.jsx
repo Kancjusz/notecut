@@ -12,6 +12,7 @@ class App extends Component
     {
         super()
         
+        this.size = 96;
         let shortcuts = localStorage.getItem("shortcuts") == null ? [] : JSON.parse(localStorage.getItem("shortcuts")) == [] ? [] : JSON.parse(localStorage.getItem("shortcuts"));
         let tiles = localStorage.getItem("tiles") == null ? [] : JSON.parse(localStorage.getItem("tiles")) == [] ? [] : JSON.parse(localStorage.getItem("tiles"));
         let folders = localStorage.getItem("folders") == null ? [] : JSON.parse(localStorage.getItem("folders")) == [] ? [] : JSON.parse(localStorage.getItem("folders"));
@@ -72,7 +73,7 @@ class App extends Component
     {
         for(let i = 0; i < this.state.tiles.length; i++)
         {
-            if(!this.state.tiles[i].hasFolder && !this.state.tiles[i].hasShortcut && i != 159)
+            if(!this.state.tiles[i].hasFolder && !this.state.tiles[i].hasShortcut && i != this.size-1)
                 return i;
         }
         return -1;
@@ -169,14 +170,15 @@ class App extends Component
         });
     }
 
-    setDropShortcutId(shortcutId,tileId,inForm,shortuctInFormId)
+    setDropShortcutId(shortcutId,tileId,inForm,shortuctInFormId,autoChangeTile)
     {       
+        console.log("drop" + tileId);
         let tiles = this.state.tiles;
         let isShortcut = tiles[tileId].hasShortcut;
         let folders = this.state.folders;
 
 
-        if(inForm !== undefined && shortuctInFormId !== undefined)
+        if(inForm !== undefined && inForm === true && shortuctInFormId !== undefined)
         {
             let folder = folders[shortcutId];
             let ogId = shortcutId;
@@ -227,6 +229,8 @@ class App extends Component
             folders:folders,
             ogTileId:tileId,
         });
+
+        if(autoChangeTile) this.changeTile(tileId,shortcutId);
     }
 
     setGrabbed(val)
@@ -255,18 +259,21 @@ class App extends Component
         }
     }
 
-    changeTile(id)
+    changeTile(id,dropShortcutId)
     {
-        if(this.state.dropShortcutId == -1) return;
+        console.log("changeTile" + id);
+        if(this.state.dropShortcutId == -1 && dropShortcutId == -1) return;
+        console.log("changeTile2 " + id);
 
         let tiles = this.state.tiles;
+        let dropId = this.state.dropShortcutId + 1 + dropShortcutId;
 
         let hasShortcut = this.state.isShortcut;
         let hasFolder = !this.state.isShortcut;
-        let shortcutId = this.state.dropShortcutId;
-        let folderId = this.state.dropShortcutId;
+        let shortcutId = dropId;
+        let folderId = dropId;
 
-        if(id == 159) 
+        if(id == this.size-1) 
         {    
             if(hasShortcut) 
             {
@@ -478,7 +485,7 @@ class App extends Component
     {
         window.addEventListener('resize', this.updateDimensions);
         if(!this.state.tiles.length > 0)
-            this.createTilesArray(160);
+            this.createTilesArray(this.size);
     }
 
     componentWillUnmount() {
@@ -495,7 +502,8 @@ class App extends Component
         const tileList = this.state.tiles.map((e)=>{
             return <Tile 
                 key={e.id} 
-                id={e.id} 
+                id={e.id}
+                size={this.size} 
                 height={this.state.tileHeight}
                 width={this.state.tileWidth}
                 hasShortcut={e.hasShortcut}
@@ -503,10 +511,10 @@ class App extends Component
                 isGrabbed={this.state.isGrabbed} 
                 shortcut={e.hasShortcut ? this.state.shortcuts[e.shortcutId]:{}}
                 folder={e.hasFolder ? this.state.folders[e.folderId]:{}}
-                changeTile={()=>this.changeTile(e.id)}
+                changeTile={()=>this.changeTile(e.id,-1)}
                 setDropShortcutId={
-                    (inFolder,id)=>
-                    this.setDropShortcutId((e.hasShortcut ? e.shortcutId : e.folderId),e.id,inFolder,id)
+                    (inFolder,id,autoChangeTile)=>
+                    this.setDropShortcutId((e.hasShortcut ? e.shortcutId : e.folderId),e.id,inFolder,id,autoChangeTile)
                 } 
                 setGrabbed={(e)=>this.setGrabbed(e)}
             />
@@ -531,8 +539,9 @@ class App extends Component
                     </div>
                 </header>
 
-                
-                {tileList}
+                <div id="tiles">
+                    {tileList}
+                </div>
 
                 {
                     this.state.showShortcutForm && 

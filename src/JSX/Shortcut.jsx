@@ -64,10 +64,13 @@ class Shortcut extends Component{
 
     render()
     {
+
         const icon = "https://www.google.com/s2/favicons?sz=64&domain_url="+this.props.link;
         let link = (this.props.link.substr(0,8) == "https://" || this.props.link.substr(0,7) == "http://") 
         ? this.props.link : "https://"+this.props.link;
 
+        let outside = this.state.yPos < window.innerHeight*0.3 || this.state.yPos > window.innerHeight*0.9
+                        || this.state.xPos < window.innerWidth*0.1 || this.state.xPos > window.innerWidth*0.9;
         let descriptionTab = this.props.note.split(" ");
         let description = "";
         for(let i = 0; i < descriptionTab.length;i++)
@@ -107,10 +110,19 @@ class Shortcut extends Component{
                     }
 
                     if(this.state.mouseDown)
-                        this.props.setDropShortcutId();
+                    {
+                        if(outside)
+                            this.props.setDropShortcutId(true);
+                        else
+                            this.props.setDropShortcutId(false);
+                    }
 
                     this.props.isGrabbed(false);
                     this.setState({mouseDown:false});
+                }}
+                onClick={(e)=>{
+                    if(outside)
+                        e.preventDefault();
                 }}
                 href={link}
                 target="_blank" className="shortcut"
@@ -120,8 +132,8 @@ class Shortcut extends Component{
                         backgroundColor:this.props.color, 
                         height:this.props.height, 
                         width:this.props.width, position:"absolute", 
-                        top:this.state.yPos/window.innerHeight*100+"%", 
-                        left:this.state.xPos/window.innerWidth*100+"%", 
+                        top:(this.state.yPos ) - window.innerHeight*0.3+"px", 
+                        left:(this.state.xPos )- window.innerWidth*0.1+"px", 
                         transform:"translate(-50%,-50%)" ,zIndex:5} 
                     : this.props.inFolder 
                     ? {

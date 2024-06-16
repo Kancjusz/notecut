@@ -27,8 +27,14 @@ class Tile extends Component{
             this.setState({liesIn:false});
             return;
         } 
-        if((e.pageX > this.tile.current.offsetLeft && e.pageX < this.tile.current.offsetLeft + this.tile.current.offsetWidth)
-            && (e.pageY > this.tile.current.offsetTop && e.pageY < this.tile.current.offsetTop + this.tile.current.offsetHeight))
+
+        var bodyRect = document.body.getBoundingClientRect();
+        var elemRect = this.tile.current.getBoundingClientRect();
+        var leftOffset = elemRect.left - bodyRect.left;
+        var topOffset = elemRect.top - bodyRect.top;
+
+        if((e.clientX > leftOffset && e.clientX < leftOffset + this.tile.current.offsetWidth)
+            && (e.clientY > topOffset && e.clientY < topOffset + this.tile.current.offsetHeight))
             this.setState({liesIn:true});
         else
             this.setState({liesIn:false});
@@ -50,7 +56,7 @@ class Tile extends Component{
             <div className="tile" style={{height:this.props.height, width:this.props.width}} onMouseEnter={this.props.changeTile}>
                 <div ref={this.tile} className={this.state.liesIn ? "tileInside over": "tileInside"} style={{borderRadius:5+"px", height:this.props.height, width:this.props.width}}>
                     {
-                        this.props.id == 159 && <img src={binImg}></img>
+                        this.props.id == this.props.size-1 && <img src={binImg}></img>
                     }
 
                     {
@@ -61,7 +67,8 @@ class Tile extends Component{
                             link={this.props.shortcut.link} 
                             note={this.props.shortcut.note}
                             color={this.props.shortcut.color}
-                            setDropShortcutId={this.props.setDropShortcutId}
+                            setDropShortcutId={(autoChangeTile)=>this.props.setDropShortcutId(false,this.props.shortcut.id,autoChangeTile)}
+                            changeTile = {this.props.changeTile}
                             height={this.props.height}
                             width={this.props.width}
                             isGrabbed={(e)=>this.props.setGrabbed(e)}
@@ -76,7 +83,7 @@ class Tile extends Component{
                             note={this.props.folder.note}
                             color={this.props.folder.color}
                             shortcuts={this.props.folder.shortcuts}
-                            setDropShortcutId={(inFolder,id)=>this.props.setDropShortcutId(inFolder,id)}
+                            setDropShortcutId={(inFolder,id,autoChangeTile)=>this.props.setDropShortcutId(inFolder,id,autoChangeTile)}
                             height={this.props.height}
                             width={this.props.width}
                             isGrabbed={(e)=>this.props.setGrabbed(e)}
