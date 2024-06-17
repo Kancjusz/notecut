@@ -177,6 +177,7 @@ class App extends Component
         let isShortcut = tiles[tileId].hasShortcut;
         let folders = this.state.folders;
 
+        let state = {};
 
         if(inForm !== undefined && inForm === true && shortuctInFormId !== undefined)
         {
@@ -209,7 +210,7 @@ class App extends Component
                 folderId:ogId
             }
 
-            this.setState({inFolder:true});
+            state.inFolder = true;
         }
         else
         {
@@ -222,15 +223,18 @@ class App extends Component
             }
         }
 
-        this.setState({
+        state = {
             isShortcut:isShortcut,
             dropShortcutId:shortcutId,
             tiles:tiles,
             folders:folders,
             ogTileId:tileId,
-        });
+        }
 
-        if(autoChangeTile) this.changeTile(tileId,shortcutId);
+        if(autoChangeTile) 
+            this.changeTile(tileId,state);
+        else
+            this.setState(state);
     }
 
     setGrabbed(val)
@@ -259,17 +263,19 @@ class App extends Component
         }
     }
 
-    changeTile(id,dropShortcutId)
+    changeTile(id,state)
     {
         console.log("changeTile" + id);
-        if(this.state.dropShortcutId == -1 && dropShortcutId == -1) return;
+        if(this.state.dropShortcutId == -1 && state == null) return;
         console.log("changeTile2 " + id);
 
-        let tiles = this.state.tiles;
-        let dropId = this.state.dropShortcutId + 1 + dropShortcutId;
+        let currentState = state == null ? this.state : state;
 
-        let hasShortcut = this.state.isShortcut;
-        let hasFolder = !this.state.isShortcut;
+        let tiles = currentState.tiles;
+        let dropId = currentState.dropShortcutId;
+
+        let hasShortcut = currentState.isShortcut;
+        let hasFolder = !currentState.isShortcut;
         let shortcutId = dropId;
         let folderId = dropId;
 
@@ -511,7 +517,7 @@ class App extends Component
                 isGrabbed={this.state.isGrabbed} 
                 shortcut={e.hasShortcut ? this.state.shortcuts[e.shortcutId]:{}}
                 folder={e.hasFolder ? this.state.folders[e.folderId]:{}}
-                changeTile={()=>this.changeTile(e.id,-1)}
+                changeTile={()=>this.changeTile(e.id,null)}
                 setDropShortcutId={
                     (inFolder,id,autoChangeTile)=>
                     this.setDropShortcutId((e.hasShortcut ? e.shortcutId : e.folderId),e.id,inFolder,id,autoChangeTile)
