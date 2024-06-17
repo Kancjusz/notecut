@@ -17,6 +17,7 @@ class Folder extends Component{
             isClick:false,
 
             isScrollHeight:false,
+            isScrollWidth:false,
 
             tempPos:{
                 x:window.innerWidth/2,
@@ -28,6 +29,7 @@ class Folder extends Component{
         this.setIsOver = this.setIsOver.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
+        this.getTilesWindowOffset = this.getTilesWindowOffset.bind(this);
 
         this.folder = createRef();
     }
@@ -51,6 +53,26 @@ class Folder extends Component{
         });
     }
 
+    getTilesWindowOffset()
+    {
+        let tilesWindow = document.getElementById("tiles");
+        if(tilesWindow === null)
+            return{
+                left: 384,
+                right: 384,
+                top: 576,
+                bottom: 576
+            }
+        let bodyRect = document.body.getBoundingClientRect();
+        let tilesRect = tilesWindow.getBoundingClientRect();
+        return{
+            left: tilesRect.left - bodyRect.left,
+            right: bodyRect.right - tilesRect.right,
+            top: tilesRect.top - bodyRect.top,
+            bottom: bodyRect.bottom - tilesRect.bottom
+        }
+    }
+
     onMouseMove(e)
     {
         this.setState({isClick:false})
@@ -63,19 +85,19 @@ class Folder extends Component{
 
     onMouseDown(e)
     {
-        let isWidth = false;
-        let isHeight = false;
+        let isWidth;
+        let isHeight;
 
         var bodyRect = document.body.getBoundingClientRect();
         var elemRect = this.folder.current.getBoundingClientRect();
         var leftOffset = elemRect.left - bodyRect.left;
-        var topOffset = elemRect.top - bodyRect.top;
+        var topOffset = elemRect.top - bodyRect.top + (this.state.isScrollHeight ? (226-this.props.height) : 0);
 
         if(this.folder.current !== null)
         {
             isWidth = leftOffset + 276 > window.innerWidth;
-            isHeight = topOffset + 226 > Math.ceil(160 / Math.floor(window.innerWidth / 96)) * 93;
-            this.setState({isScrollHeight: isHeight});
+            isHeight = topOffset + 226 > window.innerHeight;
+            this.setState({isScrollHeight: isHeight, isScrollWidth: isWidth});
         }
 
         if(!this.state.showContents) return;
@@ -113,10 +135,13 @@ class Folder extends Component{
 
     render()
     {
+        let transition = this.state.showContents ? "all" : "none";
+
         let descriptionTab = this.props.note.split(" ");
         let description = "";
-        let outside = this.state.yPos < window.innerHeight*0.3 || this.state.yPos > window.innerHeight*0.9
-                        || this.state.xPos < window.innerWidth*0.1 || this.state.xPos > window.innerWidth*0.9;
+        let tilesOffset = this.getTilesWindowOffset();
+        let outside = this.state.yPos < tilesOffset.top || this.state.yPos > window.innerHeight-tilesOffset.bottom
+                        || this.state.xPos < tilesOffset.left || this.state.xPos > window.innerWidth-tilesOffset.left;
 
         for(let i = 0; i < descriptionTab.length;i++)
         {
@@ -169,9 +194,12 @@ class Folder extends Component{
                     this.state.mouseDown
                     ? {
                         backgroundColor:this.props.color, height:this.props.height, width:this.props.width, position:"absolute", 
-                        top:(this.state.yPos ) - window.innerHeight*0.3+"px", left:(this.state.xPos )- window.innerWidth*0.1+"px", transform:"translate(-50%,-50%)"
+                        top:(this.state.yPos ) - tilesOffset.top+"px", left:(this.state.xPos )- tilesOffset.left+"px", transform:"translate(-50%,-50%)"
                     } 
-                    : {backgroundColor:this.props.color, height:this.props.height, width:this.props.width}
+                    : {
+                        backgroundColor:this.props.color, height:this.props.height, width:this.props.width, 
+                        transition: transition
+                    }
                 }
             >
                 {this.state.showContents && <FolderContents
@@ -180,7 +208,7 @@ class Folder extends Component{
                     height={this.props.height}
                     width={this.props.width}
                     isGrabbed={(e)=>this.props.isGrabbed(e)}
-                    toLeft={this.folder.current.offsetLeft + 276 > window.innerWidth}
+                    toLeft={this.state.isScrollWidth}
                     toTop={this.state.isScrollHeight}
                     
                 />}

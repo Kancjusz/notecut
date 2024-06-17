@@ -21,6 +21,7 @@ class Shortcut extends Component{
         this.setPosition = this.setPosition.bind(this);
         this.setIsOver = this.setIsOver.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
+        this.getTilesWindowOffset = this.getTilesWindowOffset.bind(this);
     }
 
     setIsOver(val)
@@ -62,15 +63,36 @@ class Shortcut extends Component{
         document.removeEventListener("mousemove",this.onMouseMove);
     }
 
+    getTilesWindowOffset()
+    {
+        let tilesWindow = document.getElementById("tiles");
+        if(tilesWindow === null)
+            return{
+                left: 384,
+                right: 384,
+                top: 576,
+                bottom: 576
+            }
+        let bodyRect = document.body.getBoundingClientRect();
+        let tilesRect = tilesWindow.getBoundingClientRect();
+        return{
+            left: tilesRect.left - bodyRect.left,
+            right: bodyRect.right - tilesRect.right,
+            top: tilesRect.top - bodyRect.top,
+            bottom: bodyRect.bottom - tilesRect.bottom
+        }
+    }
+
     render()
     {
 
         const icon = "https://www.google.com/s2/favicons?sz=64&domain_url="+this.props.link;
-        let link = (this.props.link.substr(0,8) == "https://" || this.props.link.substr(0,7) == "http://") 
+        let link = (this.props.link.substr(0,8) === "https://" || this.props.link.substr(0,7) === "http://") 
         ? this.props.link : "https://"+this.props.link;
 
-        let outside = this.state.yPos < window.innerHeight*0.3 || this.state.yPos > window.innerHeight*0.9
-                        || this.state.xPos < window.innerWidth*0.1 || this.state.xPos > window.innerWidth*0.9;
+        let tilesOffset = this.getTilesWindowOffset();
+        let outside = this.state.yPos < tilesOffset.top || this.state.yPos > window.innerHeight-tilesOffset.bottom
+                        || this.state.xPos < tilesOffset.left || this.state.xPos > window.innerWidth-tilesOffset.left;
         let descriptionTab = this.props.note.split(" ");
         let description = "";
         for(let i = 0; i < descriptionTab.length;i++)
@@ -132,8 +154,8 @@ class Shortcut extends Component{
                         backgroundColor:this.props.color, 
                         height:this.props.height, 
                         width:this.props.width, position:"absolute", 
-                        top:(this.state.yPos ) - window.innerHeight*0.3+"px", 
-                        left:(this.state.xPos )- window.innerWidth*0.1+"px", 
+                        top:(this.state.yPos ) - tilesOffset.top + "px", 
+                        left:(this.state.xPos )- tilesOffset.left + "px", 
                         transform:"translate(-50%,-50%)" ,zIndex:5} 
                     : this.props.inFolder 
                     ? {

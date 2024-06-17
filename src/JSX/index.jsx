@@ -1,4 +1,3 @@
-import { render } from "@testing-library/react";
 import React, { Component, createRef } from "react";
 import ShortcutForm from "./ShortcutForm";
 import FolderForm from "./FolderForm";
@@ -13,17 +12,23 @@ class App extends Component
         super()
         
         this.size = 96;
-        let shortcuts = localStorage.getItem("shortcuts") == null ? [] : JSON.parse(localStorage.getItem("shortcuts")) == [] ? [] : JSON.parse(localStorage.getItem("shortcuts"));
-        let tiles = localStorage.getItem("tiles") == null ? [] : JSON.parse(localStorage.getItem("tiles")) == [] ? [] : JSON.parse(localStorage.getItem("tiles"));
-        let folders = localStorage.getItem("folders") == null ? [] : JSON.parse(localStorage.getItem("folders")) == [] ? [] : JSON.parse(localStorage.getItem("folders"));
+        // eslint-disable-next-line
+        let shortcuts = localStorage.getItem("shortcuts") === null ? [] : JSON.parse(localStorage.getItem("shortcuts")) == [] ? [] : JSON.parse(localStorage.getItem("shortcuts"));
+        // eslint-disable-next-line
+        let tiles = localStorage.getItem("tiles") === null ? [] : JSON.parse(localStorage.getItem("tiles")) == [] ? [] : JSON.parse(localStorage.getItem("tiles"));
+        // eslint-disable-next-line
+        let folders = localStorage.getItem("folders") === null ? [] : JSON.parse(localStorage.getItem("folders")) == [] ? [] : JSON.parse(localStorage.getItem("folders"));
+
+        let tilesDivWidth = this.getTilesDivWidth();
 
         this.state = {
             shortcuts:shortcuts,
             folders:folders,
             tiles:tiles,
 
-            tileHeight:(window.innerHeight*0.8)/8,
-            tileWidth:window.innerWidth/20,
+            tileHeight:((window.innerHeight)*0.7)/8,
+            tileWidth:tilesDivWidth/12,
+            tilesWindowWidth:1920*0.5,
 
             showShortcutForm:false,
             showFolderForm:false,
@@ -49,6 +54,7 @@ class App extends Component
         this.setToStorage = this.setToStorage.bind(this);
         this.checkFreeSpace = this.checkFreeSpace.bind(this);
         this.updateDimensions = this.updateDimensions.bind(this);
+        this.getTilesDivWidth = this.getTilesDivWidth.bind(this);
 
         this.main = createRef();
     }
@@ -73,7 +79,7 @@ class App extends Component
     {
         for(let i = 0; i < this.state.tiles.length; i++)
         {
-            if(!this.state.tiles[i].hasFolder && !this.state.tiles[i].hasShortcut && i != this.size-1)
+            if(!this.state.tiles[i].hasFolder && !this.state.tiles[i].hasShortcut && i !== this.size-1)
                 return i;
         }
         return -1;
@@ -95,7 +101,7 @@ class App extends Component
 
         let freeId = this.checkFreeSpace();
 
-        if(freeId == -1)
+        if(freeId === -1)
         {
             this.setState({noFreeSpace:true,showShortcutForm:false});
             return;
@@ -134,7 +140,7 @@ class App extends Component
 
         let freeId = this.checkFreeSpace();
 
-        if(freeId == -1)
+        if(freeId === -1)
         {
             this.setState({noFreeSpace:true,showFolderForm:false});
             return;
@@ -190,7 +196,7 @@ class App extends Component
             let id = 0;
             for(let i = 0; i < folder.shortcuts.length; i++)
             {
-                if(folder.shortcuts[i].id == shortcutId)
+                if(folder.shortcuts[i].id === shortcutId)
                 {
                     id = i;
                     break;
@@ -249,7 +255,7 @@ class App extends Component
     {
         for(let i = 0; i < this.state.tiles.length;i++)
         {
-            if(this.state.tiles[i].hasShortcut && this.state.tiles[i].shortcutId == id)
+            if(this.state.tiles[i].hasShortcut && this.state.tiles[i].shortcutId === id)
                 return i;
         }
     }
@@ -258,7 +264,7 @@ class App extends Component
     {
         for(let i = 0; i < this.state.tiles.length;i++)
         {
-            if(this.state.tiles[i].hasFolder && this.state.tiles[i].folderId == id)
+            if(this.state.tiles[i].hasFolder && this.state.tiles[i].folderId === id)
                 return i;
         }
     }
@@ -266,7 +272,7 @@ class App extends Component
     changeTile(id,state)
     {
         console.log("changeTile" + id);
-        if(this.state.dropShortcutId == -1 && state == null) return;
+        if(this.state.dropShortcutId === -1 && state == null) return;
         console.log("changeTile2 " + id);
 
         let currentState = state == null ? this.state : state;
@@ -279,7 +285,7 @@ class App extends Component
         let shortcutId = dropId;
         let folderId = dropId;
 
-        if(id == this.size-1) 
+        if(id === this.size-1) 
         {    
             if(hasShortcut) 
             {
@@ -327,7 +333,7 @@ class App extends Component
                     {
                         for(let j = 0;j < shortcutsInFolder.length;j++)
                         {
-                            if(shortcuts[i].id == shortcutsInFolder[j].id)
+                            if(shortcuts[i].id === shortcutsInFolder[j].id)
                             {
                                 shortcuts[i] = null;
                                 break;
@@ -394,7 +400,7 @@ class App extends Component
             }
         }
 
-        if(hasFolder && tiles[id].hasFolder && tiles[id].folderId == folderId) 
+        if(hasFolder && tiles[id].hasFolder && tiles[id].folderId === folderId) 
         {
             this.setState({
                 dropShortcutId:-1,
@@ -441,7 +447,7 @@ class App extends Component
             let folder = folders[tiles[id].folderId];
 
             if(folder.shortcuts.length > 0 &&
-            folder.shortcuts[folder.shortcuts.length-1].id == this.state.shortcuts[shortcutId].id) 
+            folder.shortcuts[folder.shortcuts.length-1].id === this.state.shortcuts[shortcutId].id) 
                 return;
 
             let shortcuts = folder.shortcuts;
@@ -482,9 +488,17 @@ class App extends Component
         localStorage.setItem("folders",JSON.stringify(folders));
     }
 
+    getTilesDivWidth()
+    {
+        return window.innerWidth < 1920 * 0.5 ? window.innerWidth : 1920 * 0.5;
+    }
+
     updateDimensions()
     {
-        this.setState({ tileWidth: window.innerWidth/20, tileHeight: (window.innerHeight*0.8)/8 });
+        let tilesDivWidth = this.getTilesDivWidth();
+        let tilesDivHeight = window.innerHeight*0.7;
+
+        this.setState({ tileWidth: tilesDivWidth/12, tileHeight: (tilesDivHeight)/8, tilesWindowWidth: tilesDivWidth});
     }
 
     componentDidMount()
@@ -545,7 +559,7 @@ class App extends Component
                     </div>
                 </header>
 
-                <div id="tiles">
+                <div id="tiles" style={{height:(window.innerHeight*0.7)+"px", width:(this.state.tilesWindowWidth)+"px"}}>
                     {tileList}
                 </div>
 
