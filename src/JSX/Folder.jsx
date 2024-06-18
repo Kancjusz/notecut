@@ -90,9 +90,11 @@ class Folder extends Component{
 
         var bodyRect = document.body.getBoundingClientRect();
         var elemRect = this.folder.current.getBoundingClientRect();
-        var leftOffset = elemRect.left - bodyRect.left;
-        var topOffset = elemRect.top - bodyRect.top + (this.state.isScrollHeight ? (226-this.props.height) : 0);
+        //var leftOffset = elemRect.left - bodyRect.left;
+        //var topOffset = elemRect.top - bodyRect.top + (this.state.isScrollHeight ? (226-this.props.height) : 0);
 
+        var leftOffset = this.props.offset.left;
+        var topOffset = this.props.offset.top+ (this.state.isScrollHeight ? (226-this.props.height) : 0);
         if(this.folder.current !== null)
         {
             isWidth = leftOffset + 276 > window.innerWidth;
@@ -193,12 +195,12 @@ class Folder extends Component{
                 style={
                     this.state.mouseDown
                     ? {
-                        backgroundColor:this.props.color, height:this.props.height, width:this.props.width, position:"absolute", 
+                        backgroundColor:this.state.showContents ? "transparent" : this.props.color, height:this.props.height, width:this.props.width, position:"absolute", 
                         top:(this.state.yPos ) - tilesOffset.top+"px", left:(this.state.xPos )- tilesOffset.left+"px", transform:"translate(-50%,-50%)"
                     } 
                     : {
-                        backgroundColor:this.props.color, height:this.props.height, width:this.props.width, 
-                        transition: transition
+                        backgroundColor:this.state.showContents ? "transparent" : this.props.color, height:this.props.height, width:this.props.width, 
+                        transition: "background-color 0.5s"
                     }
                 }
             >
@@ -207,6 +209,8 @@ class Folder extends Component{
                     setDropShortcutId={(inFolder,id,autoChangeTile)=>{this.props.setDropShortcutId(inFolder,id,autoChangeTile); this.setState({showContents:false})}}
                     height={this.props.height}
                     width={this.props.width}
+                    offset={this.props.offset}
+                    color={this.props.color}
                     isGrabbed={(e)=>this.props.isGrabbed(e)}
                     toLeft={this.state.isScrollWidth}
                     toTop={this.state.isScrollHeight}

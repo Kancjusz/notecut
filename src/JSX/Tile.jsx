@@ -16,8 +16,24 @@ class Tile extends Component{
         }
 
         this.onMouseMove = this.onMouseMove.bind(this);
+        this.getTileDocumentPosition = this.getTileDocumentPosition.bind(this);
 
         this.tile = React.createRef();
+    }
+
+    getTileDocumentPosition()
+    {
+        if(this.tile.current == null) return;
+
+        var bodyRect = document.body.getBoundingClientRect();
+        var elemRect = this.tile.current.getBoundingClientRect();
+
+        return{
+            left: elemRect.left - bodyRect.left,
+            right: bodyRect.right - elemRect.right,
+            top: elemRect.top - bodyRect.top,
+            bottom: bodyRect.bottom - elemRect.bottom
+        }
     }
 
     onMouseMove(e)
@@ -28,10 +44,9 @@ class Tile extends Component{
             return;
         } 
 
-        var bodyRect = document.body.getBoundingClientRect();
-        var elemRect = this.tile.current.getBoundingClientRect();
-        var leftOffset = elemRect.left - bodyRect.left;
-        var topOffset = elemRect.top - bodyRect.top;
+        let offset = this.getTileDocumentPosition();
+        let leftOffset = offset.left;
+        let topOffset = offset.top;
 
         if((e.clientX > leftOffset && e.clientX < leftOffset + this.tile.current.offsetWidth)
             && (e.clientY > topOffset && e.clientY < topOffset + this.tile.current.offsetHeight))
@@ -83,6 +98,7 @@ class Tile extends Component{
                             note={this.props.folder.note}
                             color={this.props.folder.color}
                             shortcuts={this.props.folder.shortcuts}
+                            offset={this.getTileDocumentPosition()}
                             setDropShortcutId={(inFolder,id,autoChangeTile)=>this.props.setDropShortcutId(inFolder,id,autoChangeTile)}
                             height={this.props.height}
                             width={this.props.width}

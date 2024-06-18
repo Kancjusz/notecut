@@ -10,13 +10,11 @@ class FolderContents extends Component
         super(props)
 
         this.state={
-            pageId:0,
-            
+            pageId:0,       
         }
 
         this.pageLeft = this.pageLeft.bind(this);
         this.pageRight = this.pageRight.bind(this);
-
     }
 
     pageLeft()
@@ -39,6 +37,10 @@ class FolderContents extends Component
         let tileHeight = Math.floor((window.innerHeight*0.7)/8);
         let topOffset = this.props.toTop ? 226-tileHeight : 0;
         let leftOffset = this.props.toLeft ? 276-tileWidth : 0;
+
+        let marginAnimation = "0.5s ease-in-out 0s 1 normal forwards running folderOpen";
+        marginAnimation += this.props.toTop ? ", 0.5s ease-in-out 0s 1 normal none running folderOpenMarginTop" : "";
+        marginAnimation += this.props.toLeft ? ", 0.5s ease-in-out 0s 1 normal none running folderOpenMarginLeft" : "";
 
         let pages = new Array(Math.ceil(this.props.shortcuts.length / 4));
         for(let i = 0; i < Math.ceil(this.props.shortcuts.length / 4); i++)
@@ -64,9 +66,9 @@ class FolderContents extends Component
 
         return(
             <div className={"folder"} style={{
-                    display:"flex", width:276+"px",
-                    marginTop:-topOffset+"px", marginLeft:-leftOffset+"px"
-                }}>
+                marginTop:-topOffset+"px", marginLeft:-leftOffset+"px",
+                animation: marginAnimation
+            }}>
                 <div className={"arrow"+(this.state.pageId == 0 ? "NoHover": "")} onClick={this.pageLeft}><p>{this.state.pageId != 0 ? "<" : ""}</p></div>
                 <div className="folderContents">
                     {pages[this.state.pageId]}
@@ -75,6 +77,25 @@ class FolderContents extends Component
                 className={
                     "arrow"+(this.state.pageId == pages.length-1 || pages.length == 0 ? "NoHover": "")
                 } onClick={this.pageRight}><p>{this.state.pageId != pages.length-1 && pages.length != 0 ? ">" : ""}</p></div>
+
+                
+                <div className="folderAnimationDiv" style={{
+                    backgroundColor:this.props.color
+                }}/>
+
+                <style>
+                    {`
+                        @keyframes folderOpenMarginTop {
+                            from {margin-top: 0;}
+                            to {margin-top: ${-topOffset}px;}
+                        }
+
+                        @keyframes folderOpenMarginLeft {
+                            from {margin-left: 0;}
+                            to {margin-left: ${-leftOffset}px;}
+                        }
+                    `}
+                </style>
             </div>
         )
     }

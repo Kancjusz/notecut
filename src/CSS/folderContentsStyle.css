@@ -1,16 +1,68 @@
+@keyframes folderOpen {
+    from {height: 0; width: 0;}
+    to {height: 226px; width: 276px;}
+}
+
+@keyframes folderOpen2 {
+    from {height: 0; width: 0;}
+    to {height: 216px; width: 206px;}
+}
+
+@keyframes folderOpen3 {
+    from {height: 0; width: 0;}
+    to {height: 226px; width: 30px;}
+}
+
+/*
+@keyframes folderOpenMarginTop {
+    from {margin-top: 0;}
+    to {margin-top: -150px;}
+}
+
+@keyframes folderOpenMarginLeft {
+    from {margin-left: 0;}
+    to {margin-left: -150px;}
+}*/
+
+.folderAnimationDiv{
+    border-radius: 15px;
+
+    position:absolute;  
+
+    opacity: 0.7;
+
+    animation: 0.5s ease-in-out 0s 1 normal forwards running folderOpen;
+    z-index: 3;
+}
+
+.folder{
+    height: 0;
+    width: 0;
+
+    display: flex;
+
+    border-radius: 15px;
+
+    animation: 0.5s ease-in-out 0s 1 normal forwards running folderOpen;
+
+    overflow: hidden;
+}
+
 .folderContents{
     display: flex;
     flex: 0 0 auto;
     flex-wrap: wrap;
 
-    background-color: rgba(255, 255, 255, 0.651);
     padding: 5px;
 
     height: 216px;
     width: 206px;
 
-    z-index: 10;
+    z-index: 5;
 
+    animation-name: folderOpen2;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
 }
 
 .folderContents > .shortcut{
@@ -21,15 +73,18 @@
 .arrow{
     transition: all 0.2s;
 
-    z-index: 10;
+    z-index: 4;
 
     height: 226px;
     width: 30px;
 
-    background-color: rgba(255, 255, 255, 0.651);
     border-radius: 0 15px 15px 0;
 
     margin: 0;
+
+    animation-name: folderOpen3;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
 }
 
 .arrowNoHover:first-child,
@@ -38,26 +93,28 @@
 }
 
 .arrow:hover{
-    background-color: rgba(175, 175, 175, 0.651);
+    background-color: rgba(0, 0, 0, 0.3);
     cursor: pointer;
 }
 
 .arrow p{
     position: relative;
-    top: 50%;
-    transform: translate(0,-50%);
+    top: 30%;
 
     font-size: 30px;
-    margin: 10px;
 }
 
 .arrowNoHover{
-    z-index: 10;
+    z-index: 4;
 
     height: 226px;
+    width: 30px;
 
-    background-color: rgba(255, 255, 255, 0.651);
     border-radius: 0 15px 15px 0;
+
+    animation-name: folderOpen3;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
 }
 
 .arrowNoHover p{
@@ -68,6 +125,4 @@
     font-size: 30px;
     margin: 10px;
 }
-
-
 
