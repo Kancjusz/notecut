@@ -87,6 +87,7 @@ class App extends Component
 
     addShortcut(name,link,note,color)
     {
+        if(color == "") color = "#000000";
         let shortcuts = this.state.shortcuts;
 
         let shortcut = {
@@ -126,6 +127,7 @@ class App extends Component
 
     addFolder(name,note,color)
     {
+        if(color == "") color = "#000000";
         let folders = this.state.folders;
 
         let folder = {
@@ -178,7 +180,6 @@ class App extends Component
 
     setDropShortcutId(shortcutId,tileId,inForm,shortuctInFormId,autoChangeTile)
     {       
-        console.log("drop" + tileId);
         let tiles = this.state.tiles;
         let isShortcut = tiles[tileId].hasShortcut;
         let folders = this.state.folders;
@@ -271,9 +272,7 @@ class App extends Component
 
     changeTile(id,state)
     {
-        console.log("changeTile" + id);
         if(this.state.dropShortcutId === -1 && state == null) return;
-        console.log("changeTile2 " + id);
 
         let currentState = state == null ? this.state : state;
 

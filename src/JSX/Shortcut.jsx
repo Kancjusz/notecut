@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "../CSS/shortcutStyle.css"
+import EditShortcut from "./EditShortcut";
 class Shortcut extends Component{
     constructor(props)
     {
@@ -12,6 +13,12 @@ class Shortcut extends Component{
             mouseDown:false,
             isClick:false,
 
+            showEdit:false,
+            currentMousePos:{
+                x:0,
+                y:0
+            },
+
             tempPos:{
                 x:window.innerWidth/2,
                 y:window.innerHeight/2,
@@ -21,6 +28,7 @@ class Shortcut extends Component{
         this.setPosition = this.setPosition.bind(this);
         this.setIsOver = this.setIsOver.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
+        this.onMouseDown = this.onMouseDown.bind(this);
         this.getTilesWindowOffset = this.getTilesWindowOffset.bind(this);
     }
 
@@ -53,14 +61,22 @@ class Shortcut extends Component{
             this.setPosition(e);
     }
 
+    onMouseDown(e)
+    {
+        if(e.button != 2) this.setState({showEdit:false});
+        else if(this.state.showEdit) this.setState({showEdit:false});
+    }
+
     componentDidMount()
     {
         document.addEventListener("mousemove",this.onMouseMove);
+        document.addEventListener("mousedown",this.onMouseDown);
     }
 
     componentWillUnmount()
     {
         document.removeEventListener("mousemove",this.onMouseMove);
+        document.addEventListener("mousedown",this.onMouseDown);
     }
 
     getTilesWindowOffset()
@@ -110,6 +126,7 @@ class Shortcut extends Component{
                 onMouseOver={()=>this.setIsOver(true)}
                 onMouseOut={()=>this.setIsOver(false)}
                 onMouseDown={(e)=>{
+                    if(e.button === 2) return;
                     this.setState({isClick:true})
                     if(e.detail == 2) return;
                     if(this.state.isOver)
@@ -146,6 +163,17 @@ class Shortcut extends Component{
                     if(outside)
                         e.preventDefault();
                 }}
+
+                onContextMenu={(e)=>{
+                    e.preventDefault();
+
+                    let showEdit = this.state.showEdit;
+                    let offset = this.getTilesWindowOffset();
+                    let mousePos = {x:e.pageX-offset.left,y:e.pageY-offset.top};
+                    
+                    this.setState({showEdit:!showEdit, currentMousePos:mousePos});
+                }}
+
                 href={link}
                 target="_blank" className="shortcut"
                 style={
@@ -169,6 +197,12 @@ class Shortcut extends Component{
 
                 <img src={icon}/>
                 <p>{this.props.name.length > 10 ? this.props.name.substring(0,10)+"..." : this.props.name}</p>
+
+                {this.state.showEdit && <EditShortcut
+                    posX={this.state.currentMousePos.x}
+                    posY={this.state.currentMousePos.y}
+                    color={this.props.color}
+                />}
             </a>
         )
     }

@@ -13,17 +13,6 @@
     to {height: 226px; width: 30px;}
 }
 
-/*
-@keyframes folderOpenMarginTop {
-    from {margin-top: 0;}
-    to {margin-top: -150px;}
-}
-
-@keyframes folderOpenMarginLeft {
-    from {margin-left: 0;}
-    to {margin-left: -150px;}
-}*/
-
 .folderAnimationDiv{
     border-radius: 15px;
 

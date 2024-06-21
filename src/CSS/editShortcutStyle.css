@@ -1,0 +1,43 @@
+@keyframes openEditBox{
+    from{width: 0px;}
+    to{width: 60px;}
+}
+
+.editBox{
+    border-radius: 5px;
+    height: 40px;
+    width: 60px;
+
+    box-shadow: rgb(92, 92, 92) 0 0px 10px;
+    cursor: pointer;
+
+    color: #000;
+
+    overflow: hidden;
+    animation-name: openEditBox;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
+
+.colorOverlay p{
+    background-color: white;
+    border-radius: 5px;
+    padding: 7px 0px;
+    width: 87%;
+    margin: 0px;
+
+    transition: all 0.5s;
+}
+
+.colorOverlay p:hover{
+    opacity: 0.7;
+
+}
+
+.colorOverlay{
+    background-color: rgba(0, 0, 0, 0.25);
+    height: 100%;
+    width: 100%;
+    border-radius: 5px;
+    padding:4px;
+}

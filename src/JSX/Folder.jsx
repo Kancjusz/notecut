@@ -3,6 +3,7 @@ import "../CSS/shortcutStyle.css";
 import folderImg from "../img/folder.png";
 import FolderContents from "./FolderContents";
 import { createRef } from "react";
+import EditShortcut from "./EditShortcut";
 class Folder extends Component{
     constructor(props)
     {
@@ -18,6 +19,12 @@ class Folder extends Component{
 
             isScrollHeight:false,
             isScrollWidth:false,
+
+            showEdit:false,
+            currentMousePos:{
+                x:0,
+                y:0
+            },
 
             tempPos:{
                 x:window.innerWidth/2,
@@ -85,13 +92,11 @@ class Folder extends Component{
 
     onMouseDown(e)
     {
+        if(e.button != 2) this.setState({showEdit:false});
+        else if(this.state.showEdit) this.setState({showEdit:false});
+
         let isWidth;
         let isHeight;
-
-        var bodyRect = document.body.getBoundingClientRect();
-        var elemRect = this.folder.current.getBoundingClientRect();
-        //var leftOffset = elemRect.left - bodyRect.left;
-        //var topOffset = elemRect.top - bodyRect.top + (this.state.isScrollHeight ? (226-this.props.height) : 0);
 
         var leftOffset = this.props.offset.left;
         var topOffset = this.props.offset.top+ (this.state.isScrollHeight ? (226-this.props.height) : 0);
@@ -137,8 +142,6 @@ class Folder extends Component{
 
     render()
     {
-        let transition = this.state.showContents ? "all" : "none";
-
         let descriptionTab = this.props.note.split(" ");
         let description = "";
         let tilesOffset = this.getTilesWindowOffset();
@@ -161,7 +164,8 @@ class Folder extends Component{
                 onMouseOver={()=>this.setIsOver(true)}
                 onMouseOut={()=>this.setIsOver(false)}
                 onMouseDown={(e)=>{
-                    this.setState({isClick:true});
+                    if(e.button === 2) return;
+                    this.setState({isClick:true, showEdit:false});
                     if(this.state.isOver && !this.state.showContents)
                     {
                         this.setPosition(e)
@@ -190,6 +194,18 @@ class Folder extends Component{
                     }
                     this.props.isGrabbed(false);
                     this.setState({mouseDown:false});
+                }}
+                
+                onContextMenu={(e)=>{
+                    e.preventDefault();
+
+                    if(this.state.showContents) return;
+
+                    let showEdit = this.state.showEdit;
+                    let offset = this.getTilesWindowOffset();
+                    let mousePos = {x:e.pageX-offset.left,y:e.pageY-offset.top};
+                    
+                    this.setState({showEdit:!showEdit, currentMousePos:mousePos});
                 }}
 
                 style={
@@ -220,6 +236,11 @@ class Folder extends Component{
                 {!this.state.showContents && <img src={folderImg}/>}
                 {!this.state.showContents && <p>{this.props.name.length > 10 ? this.props.name.substring(0,10)+"..." : this.props.name} </p>}
                 
+                {this.state.showEdit && <EditShortcut
+                    posX={this.state.currentMousePos.x}
+                    posY={this.state.currentMousePos.y}
+                    color={this.props.color}
+                />}
             </div>
         )
     }
