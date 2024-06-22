@@ -39,7 +39,11 @@ class App extends Component
             isShortcut:false,
             inFolder:false,
 
-            noFreeSpace:false
+            noFreeSpace:false,
+
+            editShortcutId:-1,
+            editShortcutForm:false,
+            editFolderForm:false
         }
 
         this.addShortcut = this.addShortcut.bind(this);
@@ -55,6 +59,8 @@ class App extends Component
         this.checkFreeSpace = this.checkFreeSpace.bind(this);
         this.updateDimensions = this.updateDimensions.bind(this);
         this.getTilesDivWidth = this.getTilesDivWidth.bind(this);
+        this.editShortcut = this.editShortcut.bind(this);
+        this.editFolder = this.editFolder.bind(this);
 
         this.main = createRef();
     }
@@ -162,6 +168,45 @@ class App extends Component
             showFolderForm:false,
             tiles: tiles,
             folders: folders
+        });
+    }
+
+    editShortcut(name,link,desc,color)
+    {
+        let shortcuts = this.state.shortcuts;
+        let id = this.state.editShortcutId;
+
+        let shortcut = {
+            id:id,
+            name: name,
+            link: link,
+            note: desc,
+            color: color,
+        }
+
+        shortcuts[id] = shortcut;
+
+        this.setState({
+            shortcuts:shortcuts,
+            editShortcutId:-1,
+            editShortcutForm:false
+        });
+    }
+
+    editFolder(name,desc,color)
+    {
+        let folders = this.state.folders;
+        let id = this.state.editShortcutId;
+
+        folders[id].name = name;
+        folders[id].note = desc;
+        folders[id].color = color;
+
+
+        this.setState({
+            folders:folders,
+            editShortcutId:-1,
+            editFolderForm:false
         });
     }
 
@@ -536,6 +581,7 @@ class App extends Component
                     this.setDropShortcutId((e.hasShortcut ? e.shortcutId : e.folderId),e.id,inFolder,id,autoChangeTile)
                 } 
                 setGrabbed={(e)=>this.setGrabbed(e)}
+                setEditData={(id,isShortcut) => this.setState({editShortcutId:id,editShortcutForm:isShortcut,editFolderForm:!isShortcut})}
             />
         });
 
@@ -563,17 +609,32 @@ class App extends Component
                 </div>
 
                 {
-                    this.state.showShortcutForm && 
+                    (this.state.showShortcutForm || this.state.editShortcutForm) && 
                     <ShortcutForm 
                         addShortcut = {(name,link,note,color)=>this.addShortcut(name,link,note,color)}
                         cancel = {()=>this.setState({showShortcutForm:false})}
+                        shortcut = {this.state.editShortcutForm ? this.state.shortcuts[this.state.editShortcutId] : {
+                            id:-1,
+                            name: "",
+                            link: "",
+                            note: "",
+                            color: "#000000",
+                        }}
+                        editShortcut = {(name,link,desc,color) => this.editShortcut(name,link,desc,color)}
                     />
                 }
                 {
-                    this.state.showFolderForm && 
+                    (this.state.showFolderForm || this.state.editFolderForm) && 
                     <FolderForm 
                         addFolder = {(name,note,color)=>this.addFolder(name,note,color)}
                         cancel = {()=>this.setState({showFolderForm:false})}
+                        folder = {this.state.editFolderForm ? this.state.folders[this.state.editShortcutId] : {
+                            id:-1,
+                            name: "",
+                            note: "",
+                            color: "#000000",
+                        }}
+                        editFolder = {(name,desc,color) => this.editFolder(name,desc,color)}
                     />
                 }
 

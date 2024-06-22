@@ -11,7 +11,6 @@ class FolderForm extends Component
         super(props);
         this.state = {
             name: "",
-            link: "",
             color: "",
             note: "",
 
@@ -27,32 +26,43 @@ class FolderForm extends Component
         {
             setTimeout(()=>this.form.current.classList.add("middle"),10); 
         }
+
+        if(this.props.folder.id !== -1) this.setState({
+            validationName:false,
+            name: this.props.folder.name,
+            note: this.props.folder.note,
+            color: this.props.folder.color
+        })
     }
 
     render()
     {
+
         return(
             <form ref={this.form}>
                 <label>Nazwa</label><br/>
-                <input onChange={(e)=>{
+                <input defaultValue={this.props.folder.name} onChange={(e)=>{
                     this.setState({name:e.target.value});
                     this.setState({validationName: checkIfEmptyString(e.target)}); 
                 }}/><br/>
 
                 <label>Opis</label><br/>
-                <textarea onChange={(e)=>{
+                <textarea defaultValue={this.props.folder.note} onChange={(e)=>{
                     this.setState({note:e.target.value});
                 }}></textarea><br/>
 
                 <label>Kolor</label><br/>
-                <input type="color" onChange={(e)=>{
+                <input type="color" defaultValue={this.props.folder.color} onChange={(e)=>{
                     this.setState({color:e.target.value});
                 }}/><br/>
 
                 <button disabled={this.state.validationName} onClick={
                     (e)=>{
                         e.preventDefault();
-                        this.props.addFolder(this.state.name,this.state.note,this.state.color);
+                        if(this.props.folder.id === -1)
+                            this.props.addFolder(this.state.name,this.state.note,this.state.color);
+                        else
+                            this.props.editFolder(this.state.name,this.state.note,this.state.color);
                     }
                 }>Utwórz Folder</button>
                 <button onClick={this.props.cancel}>Anuluj</button>

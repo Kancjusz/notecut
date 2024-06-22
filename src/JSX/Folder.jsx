@@ -164,7 +164,7 @@ class Folder extends Component{
                 onMouseOver={()=>this.setIsOver(true)}
                 onMouseOut={()=>this.setIsOver(false)}
                 onMouseDown={(e)=>{
-                    if(e.button === 2) return;
+                    if(e.button === 2 || this.state.showEdit) return;
                     this.setState({isClick:true, showEdit:false});
                     if(this.state.isOver && !this.state.showContents)
                     {
@@ -230,7 +230,7 @@ class Folder extends Component{
                     isGrabbed={(e)=>this.props.isGrabbed(e)}
                     toLeft={this.state.isScrollWidth}
                     toTop={this.state.isScrollHeight}
-                    
+                    setEditData={this.props.setEditData}
                 />}
 
                 {!this.state.showContents && <img src={folderImg}/>}
@@ -240,6 +240,7 @@ class Folder extends Component{
                     posX={this.state.currentMousePos.x}
                     posY={this.state.currentMousePos.y}
                     color={this.props.color}
+                    setEditData={()=>this.props.setEditData(this.props.id,false)}
                 />}
             </div>
         )

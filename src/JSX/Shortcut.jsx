@@ -126,7 +126,7 @@ class Shortcut extends Component{
                 onMouseOver={()=>this.setIsOver(true)}
                 onMouseOut={()=>this.setIsOver(false)}
                 onMouseDown={(e)=>{
-                    if(e.button === 2) return;
+                    if(e.button === 2 || this.state.showEdit) return;
                     this.setState({isClick:true})
                     if(e.detail == 2) return;
                     if(this.state.isOver)
@@ -160,6 +160,7 @@ class Shortcut extends Component{
                     this.setState({mouseDown:false});
                 }}
                 onClick={(e)=>{
+                    if(this.state.showEdit) return;
                     if(outside)
                         e.preventDefault();
                 }}
@@ -169,7 +170,15 @@ class Shortcut extends Component{
 
                     let showEdit = this.state.showEdit;
                     let offset = this.getTilesWindowOffset();
+
                     let mousePos = {x:e.pageX-offset.left,y:e.pageY-offset.top};
+                    if(this.props.inFolder)
+                    {
+                        let offsetTop = e.currentTarget.offsetTop;
+                        let offsetLeft = e.currentTarget.offsetLeft;
+
+                        mousePos = {x: mousePos.x-offsetLeft, y: mousePos.y - offsetTop};
+                    }
                     
                     this.setState({showEdit:!showEdit, currentMousePos:mousePos});
                 }}
@@ -202,6 +211,7 @@ class Shortcut extends Component{
                     posX={this.state.currentMousePos.x}
                     posY={this.state.currentMousePos.y}
                     color={this.props.color}
+                    setEditData={()=>this.props.setEditData(this.props.id,true)}
                 />}
             </a>
         )

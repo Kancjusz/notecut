@@ -59,6 +59,7 @@ class FolderContents extends Component
                 height={96}
                 width={96}
                 isGrabbed={(e)=>this.props.isGrabbed(e)}
+                setEditData={this.props.setEditData}
                 inFolder={true}
                 />);
             });

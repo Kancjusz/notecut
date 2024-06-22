@@ -5,12 +5,14 @@ const EditShortcut = (props) =>{
 
     return(
         <div className="editBox" style={{
-            backgroundColor:props.color,
-            opacity:1,
-            position:"absolute",
-            top: props.posY+"px",
-            left: props.posX+"px"
-        }}>
+                backgroundColor:props.color,
+                opacity:1,
+                position:"absolute",
+                top: props.posY+"px",
+                left: props.posX+"px"
+            }}
+            onMouseDown={props.setEditData}
+        >
             <div className="colorOverlay">
                 <p>Edit</p>
             </div>

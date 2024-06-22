@@ -87,6 +87,7 @@ class Tile extends Component{
                             height={this.props.height}
                             width={this.props.width}
                             isGrabbed={(e)=>this.props.setGrabbed(e)}
+                            setEditData={this.props.setEditData}
                             inFolder={false}
                         />
                     }
@@ -103,6 +104,7 @@ class Tile extends Component{
                             height={this.props.height}
                             width={this.props.width}
                             isGrabbed={(e)=>this.props.setGrabbed(e)}
+                            setEditData={this.props.setEditData}
                             changeTile={this.props.changeTile}
                         />
                     }
