@@ -67,17 +67,20 @@ class ShortcutForm extends Component
                     this.setState({color:e.target.value});
                 }}/><br/>
 
-                <button disabled={this.state.validationName || this.state.validationLink} onClick={
-                    (e)=>{
-                        e.preventDefault();
+                <div className="buttons">
+                    <button disabled={this.state.validationName || this.state.validationLink} onClick={
+                        (e)=>{
+                            e.preventDefault();
 
-                        if(this.props.shortcut.id === -1)
-                            this.props.addShortcut(this.state.name,this.state.link,this.state.note,this.state.color);
-                        else
-                            this.props.editShortcut(this.state.name,this.state.link,this.state.note,this.state.color);
-                    }
-                }>Utwórz Skrót</button>
-                <button onClick={this.props.cancel}>Anuluj</button>
+                            if(this.props.shortcut.id === -1)
+                                this.props.addShortcut(this.state.name,this.state.link,this.state.note,this.state.color);
+                            else
+                                this.props.editShortcut(this.state.name,this.state.link,this.state.note,this.state.color);
+                        }
+                    }>Utwórz Skrót</button>
+                    <button onClick={this.props.cancel}>Anuluj</button>
+                </div>
+
             </form>
         )
     }

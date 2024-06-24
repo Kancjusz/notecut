@@ -15,6 +15,10 @@ main{
 }
 
 header{
+    display: grid;
+    grid-template-columns: 25% 25% 25% 25%;
+    grid-template-rows:100%;
+
     width: 100%;
     height: 20%;
     background-color: rgba(0, 0, 0, 0.404);
@@ -28,27 +32,24 @@ header{
 }
 
 header h1{
-    width: 40%;
 
     color: white;
     font-variant: small-caps;
-    font-size: 120px;
+    font-size: 80px;
 
     position: relative;
-    left: 50px;
-    top: 50%;
-    
-    transform: translate(-0,-50%);
+    left: 70%;
+    top: 70%;  
+    transform: translate(-50%,-50%);
 
     margin: 0;
 
     text-shadow: 5px 5px 0px rgba(0, 0, 0, 0.75), 10px 10px 0px rgba(255, 255, 255, 0.5), 15px 15px 0px rgba(0, 0, 0, 0.25), 20px 20px 0px rgba(255, 255, 255, 0.1);
-
-    float:left;
 }
 
 #addShortcut{
-    width: 20%;
+    height: 50%;
+    width: 50%;
 
     transition: all 0.2s;
 
@@ -61,9 +62,9 @@ header h1{
     background-color: darkgray;
 
     position: relative;
-    right: 10%;
+    left: 50%;
     top: 50%;
-    transform: translate(-0%,-50%);
+    transform: translate(-50%,-50%);
 
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 
@@ -80,7 +81,8 @@ header h1{
 }
 
 #addFolder{
-    width: 20%;
+    height: 50%;
+    width: 50%;
 
     transition: all 0.2s;
 
@@ -93,9 +95,9 @@ header h1{
     background-color: darkgray;
 
     position: relative;
-    right: 15%;
+    left: 50%;
     top: 50%;
-    transform: translate(-0,-50%);
+    transform: translate(-50%,-50%);
 
 
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
@@ -112,6 +114,42 @@ header h1{
     margin: 0;
 }
 
+#settings{
+    height: 50%;
+
+    position: relative;
+    right: 0%;
+    top: 50%;
+    transform: translate(-0,-50%);
+
+
+    float: right;
+
+    padding: 10px;
+}
+
+#settings img{
+    height: 100%;
+    filter: invert();
+    opacity: 0.7;
+
+    padding: 10px;
+    border-radius: 20px;
+
+    position: relative;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+
+    transition: all 0.5s;
+}
+
+#settings img:hover{
+    background-color: gainsboro;
+    cursor: pointer;
+    opacity: 1;
+}
+
 #tiles{
     display: flex;
     flex-wrap: wrap;
@@ -119,6 +157,17 @@ header h1{
     position: relative;
     left: 50%;
     transform: translate(-50%,0%);
+
+    border-radius: 15px;
+}
+
+.borderBox{
+    padding:3px;
+    height: 70%;
+    position: relative;
+    left: 50%;
+    transform: translate(-50%,0%);
+    border-radius: 17px;
 }
 
 .subText{

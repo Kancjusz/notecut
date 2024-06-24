@@ -56,16 +56,18 @@ class FolderForm extends Component
                     this.setState({color:e.target.value});
                 }}/><br/>
 
-                <button disabled={this.state.validationName} onClick={
-                    (e)=>{
-                        e.preventDefault();
-                        if(this.props.folder.id === -1)
-                            this.props.addFolder(this.state.name,this.state.note,this.state.color);
-                        else
-                            this.props.editFolder(this.state.name,this.state.note,this.state.color);
-                    }
-                }>Utwórz Folder</button>
-                <button onClick={this.props.cancel}>Anuluj</button>
+                <div className="buttons">
+                    <button disabled={this.state.validationName} onClick={
+                        (e)=>{
+                            e.preventDefault();
+                            if(this.props.folder.id === -1)
+                                this.props.addFolder(this.state.name,this.state.note,this.state.color);
+                            else
+                                this.props.editFolder(this.state.name,this.state.note,this.state.color);
+                        }
+                    }>Utwórz Folder</button>
+                    <button onClick={this.props.cancel}>Anuluj</button>
+                </div>
             </form>
         )
     }

@@ -67,9 +67,46 @@ class Tile extends Component{
 
     render()
     {
+        let tileBorder = "";
+        let tileInsideBorder = "";
+        switch(this.props.id)
+        {
+            case 0:
+                tileBorder = "15px 0 0 0";
+                tileInsideBorder = "15px 5px 5px 5px";
+                break;
+            case 11:
+                tileBorder = "0 15px 0 0";
+                tileInsideBorder = "5px 15px 5px 5px";
+                break;
+            case 84:
+                tileBorder = "0 0 0 15px";
+                tileInsideBorder = "5px 5px 5px 15px";
+                break;
+            case 95:
+                tileBorder = "0 0 15px 0";
+                tileInsideBorder = "5px 5px 15px 5px";
+                break;
+            default:
+                tileBorder = "0 0 0 0";
+                tileInsideBorder = "5px";
+                break;
+        }
+
         return(
-            <div className="tile" style={{height:this.props.height, width:this.props.width}} onMouseEnter={this.props.changeTile}>
-                <div ref={this.tile} className={this.state.liesIn ? "tileInside over": "tileInside"} style={{borderRadius:5+"px", height:this.props.height, width:this.props.width}}>
+            <div className="tile" style={{
+                height:this.props.height, 
+                width:this.props.width,
+                borderRadius:tileBorder
+            }} onMouseEnter={this.props.changeTile}>
+                <div ref={this.tile} className={this.state.liesIn ? "tileInside over": "tileInside"} style={ this.state.liesIn ? {
+                    borderRadius:tileInsideBorder, 
+                    height:this.props.height, width:this.props.width
+                } : {
+                    borderRadius:tileInsideBorder, 
+                    background:this.props.backgroundColor,
+                    height:this.props.height, width:this.props.width
+                }}>
                     {
                         this.props.id == this.props.size-1 && <img src={binImg}></img>
                     }

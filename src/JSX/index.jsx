@@ -3,7 +3,9 @@ import ShortcutForm from "./ShortcutForm";
 import FolderForm from "./FolderForm";
 import { showGrid,hideGrid } from "../Scripts/showGrid";
 import Tile from "./Tile"
+import settingsImg from "../img/settings.png"
 import "../CSS/indexStyle.css"
+import Settings from "./Settings";
 
 class App extends Component
 {
@@ -32,6 +34,7 @@ class App extends Component
 
             showShortcutForm:false,
             showFolderForm:false,
+            showSettings:false,
 
             dropShortcutId:-1,
             ogTileId:-1,
@@ -43,12 +46,19 @@ class App extends Component
 
             editShortcutId:-1,
             editShortcutForm:false,
-            editFolderForm:false
+            editFolderForm:false,
+
+            headerColor: "rgba(0, 0, 0, 0.404)",
+            contentColor: "grey",
+            tilesColor: "dimgrey",
+            borderColor: "linear-gradient(to right, red 14%, orange 28%, yellow 42%, green 56%, blue 70%, indigo 84%, violet 100%)",
+            animate:true
         }
 
         this.addShortcut = this.addShortcut.bind(this);
         this.showShortcutForm = this.showShortcutForm.bind(this);
         this.showFolderForm = this.showFolderForm.bind(this);
+        this.showSettings = this.showSettings.bind(this);
         this.createTilesArray = this.createTilesArray.bind(this);
         this.setDropShortcutId = this.setDropShortcutId.bind(this);
         this.changeTile = this.changeTile.bind(this);
@@ -70,6 +80,7 @@ class App extends Component
         this.setState({
             showShortcutForm: !this.state.showShortcutForm,
             showFolderForm: false,
+            showSettings: false
         });
     }
 
@@ -77,6 +88,16 @@ class App extends Component
     {
         this.setState({
             showFolderForm: !this.state.showFolderForm,
+            showShortcutForm: false,
+            showSettings: false
+        });
+    }
+
+    showSettings()
+    {
+        this.setState({
+            showSettings: !this.state.showSettings,
+            showFolderForm: false,
             showShortcutForm: false
         });
     }
@@ -534,7 +555,7 @@ class App extends Component
 
     getTilesDivWidth()
     {
-        return window.innerWidth < 1920 * 0.5 ? window.innerWidth : 1920 * 0.5;
+        return window.innerWidth < 1920 * 0.5 + 6 ? window.innerWidth - 6 : 1920 * 0.5;
     }
 
     updateDimensions()
@@ -573,6 +594,7 @@ class App extends Component
                 hasShortcut={e.hasShortcut}
                 hasFolder={e.hasFolder}
                 isGrabbed={this.state.isGrabbed} 
+                backgroundColor={this.state.tilesColor}
                 shortcut={e.hasShortcut ? this.state.shortcuts[e.shortcutId]:{}}
                 folder={e.hasFolder ? this.state.folders[e.folderId]:{}}
                 changeTile={()=>this.changeTile(e.id,null)}
@@ -590,7 +612,9 @@ class App extends Component
                 height:(window.innerHeight)+"px", 
                 maxHeight:(window.innerHeight)+"px"
                 }}>
-                <header>
+                <header style={{
+                    background: this.state.headerColor,
+                }}>
                     <h1>Notecut</h1>
 
                     <div id="addShortcut" onClick={this.showShortcutForm}>
@@ -602,10 +626,38 @@ class App extends Component
                         <p>+</p>
                         <p className="subText">Dodaj Folder</p>
                     </div>
+
+                    <div id="settings" onClick={this.showSettings}>
+                        <img src={settingsImg}/>
+                    </div>
                 </header>
 
-                <div id="tiles" style={{height:(window.innerHeight*0.7)+"px", width:(this.state.tilesWindowWidth)+"px"}}>
-                    {tileList}
+                <div className="borderBox" style={{
+                    background: this.state.borderColor,
+                    animation: this.state.animate ? "animatedgradient 10s linear alternate infinite" : "none",
+                    backgroundSize: this.state.animate ? "300% 300%" : "100% 100%"
+                }}>
+                    <div id="tiles" style={{
+                        height:(window.innerHeight*0.7)+"px", 
+                        width:(this.state.tilesWindowWidth)+"px",
+                        background: this.state.tilesColor
+                    }}>
+                        {tileList}
+                    </div>
+                    <style>
+                        {`body{
+                            background: ${this.state.contentColor};
+                        }
+
+                        @keyframes animatedgradient {
+                            0% {
+                                background-position: 0% ;
+                            }
+                            100% {
+                                background-position: 100%;
+                            }
+                        }`}
+                    </style>
                 </div>
 
                 {
@@ -635,6 +687,26 @@ class App extends Component
                             color: "#000000",
                         }}
                         editFolder = {(name,desc,color) => this.editFolder(name,desc,color)}
+                    />
+                }
+
+                {
+                    this.state.showSettings && 
+                    <Settings 
+                        cancel = {()=>this.setState({showSettings:false})}
+                        saveSettings = {(hc,cc,tc,bc,a)=>this.setState({
+                            headerColor:hc,
+                            contentColor:cc,
+                            tilesColor:tc,
+                            borderColor:bc,
+                            animate:a,
+                            showSettings:false
+                        })}
+                        headerColor = {this.state.headerColor}
+                        contentColor = {this.state.contentColor}
+                        tilesColor = {this.state.tilesColor}
+                        borderColor = {this.state.borderColor}
+                        animate = {this.state.animate}
                     />
                 }
 
