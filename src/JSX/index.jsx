@@ -633,9 +633,8 @@ class App extends Component
                 </header>
 
                 <div className="borderBox" style={{
-                    background: this.state.borderColor,
+                    background: (this.state.animate ? "0% 0% / 300% 300% " : "0% 0% / 100% 100% ") + this.state.borderColor,
                     animation: this.state.animate ? "animatedgradient 10s linear alternate infinite" : "none",
-                    backgroundSize: this.state.animate ? "300% 300%" : "100% 100%"
                 }}>
                     <div id="tiles" style={{
                         height:(window.innerHeight*0.7)+"px", 
