@@ -21,6 +21,14 @@ class App extends Component
         // eslint-disable-next-line
         let folders = localStorage.getItem("folders") === null ? [] : JSON.parse(localStorage.getItem("folders")) == [] ? [] : JSON.parse(localStorage.getItem("folders"));
 
+        let settings = localStorage.getItem("settings") === null ? {
+            headerColor: "rgba(0, 0, 0, 0.404)",
+            contentColor: "grey",
+            tilesColor: "dimgrey",
+            borderColor: "linear-gradient(to right, red 4%, orange 20%, yellow 36%, green 52%, blue 68%, indigo 84%, violet 100%)",
+            animate:true
+        } : JSON.parse(localStorage.getItem("settings"));
+
         let tilesDivWidth = this.getTilesDivWidth();
 
         this.state = {
@@ -48,11 +56,7 @@ class App extends Component
             editShortcutForm:false,
             editFolderForm:false,
 
-            headerColor: "rgba(0, 0, 0, 0.404)",
-            contentColor: "grey",
-            tilesColor: "dimgrey",
-            borderColor: "linear-gradient(to right, red 14%, orange 28%, yellow 42%, green 56%, blue 70%, indigo 84%, violet 100%)",
-            animate:true
+            settings:settings
         }
 
         this.addShortcut = this.addShortcut.bind(this);
@@ -546,11 +550,12 @@ class App extends Component
         });
     }
 
-    setToStorage(tiles,shortcuts,folders)
+    setToStorage(tiles,shortcuts,folders,settings)
     {
         localStorage.setItem("tiles",JSON.stringify(tiles));
         localStorage.setItem("shortcuts",JSON.stringify(shortcuts));
         localStorage.setItem("folders",JSON.stringify(folders));
+        localStorage.setItem("settings",JSON.stringify(settings));
     }
 
     getTilesDivWidth()
@@ -579,7 +584,7 @@ class App extends Component
 
     componentDidUpdate()
     {
-        this.setToStorage(this.state.tiles,this.state.shortcuts,this.state.folders);
+        this.setToStorage(this.state.tiles,this.state.shortcuts,this.state.folders,this.state.settings);
     }
 
     render()
@@ -594,7 +599,7 @@ class App extends Component
                 hasShortcut={e.hasShortcut}
                 hasFolder={e.hasFolder}
                 isGrabbed={this.state.isGrabbed} 
-                backgroundColor={this.state.tilesColor}
+                backgroundColor={this.state.settings.tilesColor}
                 shortcut={e.hasShortcut ? this.state.shortcuts[e.shortcutId]:{}}
                 folder={e.hasFolder ? this.state.folders[e.folderId]:{}}
                 changeTile={()=>this.changeTile(e.id,null)}
@@ -613,7 +618,7 @@ class App extends Component
                 maxHeight:(window.innerHeight)+"px"
                 }}>
                 <header style={{
-                    background: this.state.headerColor,
+                    background: this.state.settings.headerColor,
                 }}>
                     <h1>Notecut</h1>
 
@@ -633,19 +638,19 @@ class App extends Component
                 </header>
 
                 <div className="borderBox" style={{
-                    background: (this.state.animate ? "0% 0% / 300% 300% " : "0% 0% / 100% 100% ") + this.state.borderColor,
-                    animation: this.state.animate ? "animatedgradient 10s linear alternate infinite" : "none",
+                    background: (this.state.settings.animate ? "0% 0% / 300% 300% " : "0% 0% / 100% 100% ") + this.state.settings.borderColor,
+                    animation: this.state.settings.animate ? "animatedgradient 10s linear alternate infinite" : "none",
                 }}>
                     <div id="tiles" style={{
                         height:(window.innerHeight*0.7)+"px", 
                         width:(this.state.tilesWindowWidth)+"px",
-                        background: this.state.tilesColor
+                        background: this.state.settings.tilesColor
                     }}>
                         {tileList}
                     </div>
                     <style>
                         {`body{
-                            background: ${this.state.contentColor};
+                            background: ${this.state.settings.contentColor};
                         }
 
                         @keyframes animatedgradient {
@@ -693,19 +698,18 @@ class App extends Component
                     this.state.showSettings && 
                     <Settings 
                         cancel = {()=>this.setState({showSettings:false})}
-                        saveSettings = {(hc,cc,tc,bc,a)=>this.setState({
+                        saveSettings = {(hc,cc,tc,bc,a)=>this.setState({settings:{
                             headerColor:hc,
                             contentColor:cc,
                             tilesColor:tc,
                             borderColor:bc,
-                            animate:a,
-                            showSettings:false
-                        })}
-                        headerColor = {this.state.headerColor}
-                        contentColor = {this.state.contentColor}
-                        tilesColor = {this.state.tilesColor}
-                        borderColor = {this.state.borderColor}
-                        animate = {this.state.animate}
+                            animate:a,                   
+                        },showSettings:false})}
+                        headerColor = {this.state.settings.headerColor}
+                        contentColor = {this.state.settings.contentColor}
+                        tilesColor = {this.state.settings.tilesColor}
+                        borderColor = {this.state.settings.borderColor}
+                        animate = {this.state.settings.animate}
                     />
                 }
 

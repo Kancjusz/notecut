@@ -72,7 +72,7 @@ class Settings extends Component
                 }}/><br/>
 
                 <label>Border Animation</label><br/>
-                <input type="checkbox" defaultChecked={this.state.animate} onChange={(e)=>{
+                <input type="checkbox" defaultChecked={this.state.animate} checked={this.state.animate} onChange={(e)=>{
                     this.setState({animate:e.target.checked});
                 }}/><br/>
 
@@ -80,6 +80,17 @@ class Settings extends Component
                 <ColorPopup colorState={this.state.borderColor} colorStateChange={(e)=>{
                     this.setState({borderColor:e});
                 }}/><br/>
+
+                <button className="defaultSettings" onClick={(e)=>{
+                    e.preventDefault();
+                    this.setState({
+                        headerColor: "rgba(0, 0, 0, 0.404)",
+                        contentColor: "grey",
+                        tilesColor: "dimgrey",
+                        borderColor: "linear-gradient(to right, red 4%, orange 20%, yellow 36%, green 52%, blue 68%, indigo 84%, violet 100%)",
+                        animate:true
+                    });
+                }}>Set to Default</button>
 
                 <div className="buttons">
                     <button disabled={this.state.validationName} onClick={
