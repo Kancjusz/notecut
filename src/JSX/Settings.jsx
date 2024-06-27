@@ -2,6 +2,9 @@ import React, { createRef, useState } from "react";
 import { Component } from "react";
 import {checkIfEmptyString} from "../Scripts/validation.js"
 import ColorPicker from 'react-best-gradient-color-picker'
+import bingLogo from "../img/bingLogo.svg"
+import yahooLogo from "../img/yahooLogo.png"
+import duckLogo from "../img/duckLogo.png"
 import "../CSS/shortcutFormStyle.css"
 
 const ColorPopup = (props) =>{
@@ -23,6 +26,45 @@ const ColorPopup = (props) =>{
     );
 }
 
+const SearchEnginePicker = (props) =>{
+    
+    return(
+        <div className="enginePicker">
+            <span>
+                <input type="radio" className="imageRadio" name="test" value="https://www.google.com" 
+                    defaultChecked={props.default === "https://www.google.com"} checked={props.default === "https://www.google.com"}
+                    onChange={(e)=>props.onChange(e.target.value)}
+                />
+                <img src="https://www.google.com/s2/favicons?sz=64&domain_url=https://www.google.com" alt="Option 1"/>
+            </span>
+
+            <span>
+                <input type="radio" className="imageRadio" name="test" value="https://www.bing.com" 
+                    defaultChecked={props.default === "https://www.bing.com"} checked={props.default === "https://www.bing.com"}
+                    onChange={(e)=>props.onChange(e.target.value)}
+                />
+                <img src={bingLogo} alt="Option 2"/>
+            </span>
+
+            <span>
+                <input type="radio" className="imageRadio" name="test" value="https://search.yahoo.com" 
+                    defaultChecked={props.default === "https://search.yahoo.com"} checked={props.default === "https://search.yahoo.com"}
+                    onChange={(e)=>props.onChange(e.target.value)}
+                />
+                <img src={yahooLogo} alt="Option 2"/>
+            </span>
+
+            <span>
+                <input type="radio" className="imageRadio" name="test" value="https://r.duckduckgo.com" 
+                    defaultChecked={props.default === "https://r.duckduckgo.com"} checked={props.default === "https://r.duckduckgo.com"}
+                    onChange={(e)=>props.onChange(e.target.value)}
+                />
+                <img src={duckLogo} alt="Option 2"/>
+            </span>
+        </div>
+    );
+}
+
 class Settings extends Component
 {
 
@@ -36,7 +78,9 @@ class Settings extends Component
             borderColor: this.props.borderColor,
             animate:this.props.animate,
 
-            showHeaderColor:false,
+            showSearchBar:this.props.showSearchBar,
+            searchEngine:this.props.searchEngine,
+            newTab:this.props.newTab,
         }
 
         this.form = createRef();
@@ -81,6 +125,21 @@ class Settings extends Component
                     this.setState({borderColor:e});
                 }}/><br/>
 
+                <label>Show Search Bar</label><br/>
+                <input type="checkbox" defaultChecked={this.state.showSearchBar} checked={this.state.showSearchBar} onChange={(e)=>{
+                    this.setState({showSearchBar:e.target.checked});
+                }}/><br/>
+
+                {this.state.showSearchBar && <div>
+                    <label>Pick Search Engine</label><br/>
+                    <SearchEnginePicker default={this.state.searchEngine} onChange={(e)=>this.setState({searchEngine:e})}/>
+
+                    <label>Open In New Tab</label><br/>
+                    <input type="checkbox" defaultChecked={this.state.newTab} checked={this.state.newTab} onChange={(e)=>{
+                        this.setState({newTab:e.target.checked});
+                    }}/><br/><br/>
+                </div>}
+
                 <button className="defaultSettings" onClick={(e)=>{
                     e.preventDefault();
                     this.setState({
@@ -88,7 +147,11 @@ class Settings extends Component
                         contentColor: "grey",
                         tilesColor: "dimgrey",
                         borderColor: "linear-gradient(to right, red 4%, orange 20%, yellow 36%, green 52%, blue 68%, indigo 84%, violet 100%)",
-                        animate:true
+                        animate:true,
+
+                        showSearchBar:true,
+                        searchEngine:"https://www.google.com",
+                        newTab:true
                     });
                 }}>Set to Default</button>
 
@@ -96,10 +159,17 @@ class Settings extends Component
                     <button disabled={this.state.validationName} onClick={
                         (e)=>{
                             e.preventDefault();
-                            this.props.saveSettings(
-                                this.state.headerColor, this.state.contentColor, 
-                                this.state.tilesColor, this.state.borderColor, this.state.animate
-                            );
+                            this.props.saveSettings({
+                                headerColor:this.state.headerColor, 
+                                contentColor:this.state.contentColor, 
+                                tilesColor:this.state.tilesColor, 
+                                borderColor:this.state.borderColor, 
+                                animate:this.state.animate,
+
+                                showSearchBar:this.state.showSearchBar,
+                                searchEngine:this.state.searchEngine,
+                                newTab:this.state.newTab
+                            });
                         }
                     }>Save Settings</button>
                     <button onClick={this.props.cancel}>Cancel</button>

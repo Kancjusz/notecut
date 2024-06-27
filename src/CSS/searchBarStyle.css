@@ -1,0 +1,30 @@
+.searchBar{
+    position: relative;
+    left: 50%;
+    transform: translate(-50%,0%);
+
+    height: 50px;
+    width: 500px;
+}
+
+.searchButtonImg{
+    height: 40px;
+    border-radius: 10px;
+
+    transition: all 0.2s;
+}
+
+.searchButtonImg:hover{
+    background-color: rgb(202, 202, 202);
+    filter: invert();
+}
+
+.searchBarInput{
+    border-radius: 5px;
+    font-size: 20px;
+    padding: 3px;
+
+    width: 90%;
+    height: 30px;
+    float: left;
+}

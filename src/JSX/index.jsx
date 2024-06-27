@@ -6,6 +6,7 @@ import Tile from "./Tile"
 import settingsImg from "../img/settings.png"
 import "../CSS/indexStyle.css"
 import Settings from "./Settings";
+import SearchBar from "./SearchBar";
 
 class App extends Component
 {
@@ -26,7 +27,11 @@ class App extends Component
             contentColor: "grey",
             tilesColor: "dimgrey",
             borderColor: "linear-gradient(to right, red 4%, orange 20%, yellow 36%, green 52%, blue 68%, indigo 84%, violet 100%)",
-            animate:true
+            animate:true,
+
+            showSearchBar:true,
+            searchEngine:"https://www.google.com",
+            newTab:true
         } : JSON.parse(localStorage.getItem("settings"));
 
         let tilesDivWidth = this.getTilesDivWidth();
@@ -637,6 +642,14 @@ class App extends Component
                     </div>
                 </header>
 
+                <div style={{width:60+"%", position:"relative", left:50+"%", transform:"translate(-50%,-0%)"}}>
+                    {this.state.settings.showSearchBar 
+                        && <SearchBar 
+                            newTab={this.state.settings.newTab} 
+                            engine={this.state.settings.searchEngine}
+                    />}
+                </div>
+
                 <div className="borderBox" style={{
                     background: (this.state.settings.animate ? "0% 0% / 300% 300% " : "0% 0% / 100% 100% ") + this.state.settings.borderColor,
                     animation: this.state.settings.animate ? "animatedgradient 10s linear alternate infinite" : "none",
@@ -698,18 +711,16 @@ class App extends Component
                     this.state.showSettings && 
                     <Settings 
                         cancel = {()=>this.setState({showSettings:false})}
-                        saveSettings = {(hc,cc,tc,bc,a)=>this.setState({settings:{
-                            headerColor:hc,
-                            contentColor:cc,
-                            tilesColor:tc,
-                            borderColor:bc,
-                            animate:a,                   
-                        },showSettings:false})}
+                        saveSettings = {(settings)=>this.setState({settings:settings,showSettings:false})}
                         headerColor = {this.state.settings.headerColor}
                         contentColor = {this.state.settings.contentColor}
                         tilesColor = {this.state.settings.tilesColor}
                         borderColor = {this.state.settings.borderColor}
                         animate = {this.state.settings.animate}
+
+                        showSearchBar = {this.state.settings.showSearchBar}
+                        searchEngine = {this.state.settings.searchEngine}
+                        newTab = {this.state.settings.newTab}
                     />
                 }
 
@@ -719,7 +730,6 @@ class App extends Component
                 >
                     <p>Wszystkie miejsca są zapełnione</p>
                 </div>
-                
             </main>
         )
     }

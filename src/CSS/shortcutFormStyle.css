@@ -51,6 +51,51 @@
     margin: 0;
 }
 
+.imageRadio{
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    opacity: 0;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.imageRadio:hover + img{
+    background-color: rgba(77, 76, 76, 0.466);
+}
+
+.enginePicker{
+    position: relative;
+    left: 50%;
+    transform: translate(-50%,0);
+    height: 80px;
+    width: 280px;
+    margin: 0;
+}
+
+[type=radio] + img {
+    height: 50px;
+    margin: 0;
+
+    position: relative;
+    left: 50%;
+    transform: translate(-50%,0);
+
+    border-radius: 10px;
+    padding: 5px;
+}
+
+[type=radio]:checked + img {
+    background-color: rgba(216, 213, 213, 0.26);
+}
+
+span{
+    float:left;
+    width: 50px;
+    border-radius: 10px;
+    margin: 10px;
+}
+
 form{
     transition: all 0.5s ease-out;
 
@@ -59,7 +104,7 @@ form{
     left: 50%;
     transform: translate(-50%,-50%);
 
-    background-color: rgba(0, 0, 0, 0.404);
+    background-color: rgba(0, 0, 0, 0.616);
 
     padding: 20px;
     width: 300px;
