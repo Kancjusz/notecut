@@ -81,6 +81,7 @@ class Settings extends Component
             showSearchBar:this.props.showSearchBar,
             searchEngine:this.props.searchEngine,
             newTab:this.props.newTab,
+            findShortcuts:this.props.findShortcuts,
         }
 
         this.form = createRef();
@@ -137,6 +138,11 @@ class Settings extends Component
                     <label>Open In New Tab</label><br/>
                     <input type="checkbox" defaultChecked={this.state.newTab} checked={this.state.newTab} onChange={(e)=>{
                         this.setState({newTab:e.target.checked});
+                    }}/><br/>
+
+                    <label>Search Shortcuts</label><br/>
+                    <input type="checkbox" defaultChecked={this.state.findShortcuts} checked={this.state.findShortcuts} onChange={(e)=>{
+                        this.setState({findShortcuts:e.target.checked});
                     }}/><br/><br/>
                 </div>}
 
@@ -151,7 +157,8 @@ class Settings extends Component
 
                         showSearchBar:true,
                         searchEngine:"https://www.google.com",
-                        newTab:true
+                        newTab:true,
+                        findShortcuts:true
                     });
                 }}>Set to Default</button>
 
@@ -168,7 +175,8 @@ class Settings extends Component
 
                                 showSearchBar:this.state.showSearchBar,
                                 searchEngine:this.state.searchEngine,
-                                newTab:this.state.newTab
+                                newTab:this.state.newTab,
+                                findShortcuts:this.state.findShortcuts,
                             });
                         }
                     }>Save Settings</button>

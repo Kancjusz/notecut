@@ -31,7 +31,8 @@ class App extends Component
 
             showSearchBar:true,
             searchEngine:"https://www.google.com",
-            newTab:true
+            newTab:true,
+            findShortcuts:true,
         } : JSON.parse(localStorage.getItem("settings"));
 
         let tilesDivWidth = this.getTilesDivWidth();
@@ -642,11 +643,13 @@ class App extends Component
                     </div>
                 </header>
 
-                <div style={{width:60+"%", position:"relative", left:50+"%", transform:"translate(-50%,-0%)"}}>
+                <div style={{width:60+"%", position:"relative", left:50+"%", transform:"translate(-50%,-0%)", zIndex:10}}>
                     {this.state.settings.showSearchBar 
                         && <SearchBar 
                             newTab={this.state.settings.newTab} 
                             engine={this.state.settings.searchEngine}
+                            findShortcuts={this.state.settings.findShortcuts}
+                            shortcuts={this.state.shortcuts}
                     />}
                 </div>
 
@@ -721,6 +724,7 @@ class App extends Component
                         showSearchBar = {this.state.settings.showSearchBar}
                         searchEngine = {this.state.settings.searchEngine}
                         newTab = {this.state.settings.newTab}
+                        findShortcuts = {this.state.settings.findShortcuts}
                     />
                 }
 
