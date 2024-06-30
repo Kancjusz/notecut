@@ -7,6 +7,8 @@ import settingsImg from "../img/settings.png"
 import "../CSS/indexStyle.css"
 import Settings from "./Settings";
 import SearchBar from "./SearchBar";
+import NoteForm from "./NoteForm";
+import Note from "./Note";
 
 class App extends Component
 {
@@ -20,7 +22,9 @@ class App extends Component
         // eslint-disable-next-line
         let tiles = localStorage.getItem("tiles") === null ? [] : JSON.parse(localStorage.getItem("tiles")) == [] ? [] : JSON.parse(localStorage.getItem("tiles"));
         // eslint-disable-next-line
-        let folders = localStorage.getItem("folders") === null ? [] : JSON.parse(localStorage.getItem("folders")) == [] ? [] : JSON.parse(localStorage.getItem("folders"));
+        let folders = localStorage.getItem("folders") === null ? [] : JSON.parse(localStorage.getItem("folders")) == [] ? [] : JSON.parse(localStorage.getItem("folders"));  
+        // eslint-disable-next-line
+        let notes = localStorage.getItem("notes") === null ? [] : JSON.parse(localStorage.getItem("notes")) == [] ? [] : JSON.parse(localStorage.getItem("notes"));
 
         let settings = localStorage.getItem("settings") === null ? {
             headerColor: "rgba(0, 0, 0, 0.404)",
@@ -41,6 +45,7 @@ class App extends Component
             shortcuts:shortcuts,
             folders:folders,
             tiles:tiles,
+            notes:notes,
 
             tileHeight:((window.innerHeight)*0.7)/8,
             tileWidth:tilesDivWidth/12,
@@ -48,6 +53,7 @@ class App extends Component
 
             showShortcutForm:false,
             showFolderForm:false,
+            showNoteForm:false,
             showSettings:false,
 
             dropShortcutId:-1,
@@ -61,13 +67,17 @@ class App extends Component
             editShortcutId:-1,
             editShortcutForm:false,
             editFolderForm:false,
+            editNoteForm:false,
 
             settings:settings
         }
 
         this.addShortcut = this.addShortcut.bind(this);
+        this.addFolder = this.addFolder.bind(this);
+        this.addNote = this.addNote.bind(this);   
         this.showShortcutForm = this.showShortcutForm.bind(this);
         this.showFolderForm = this.showFolderForm.bind(this);
+        this.showNoteForm = this.showNoteForm.bind(this);
         this.showSettings = this.showSettings.bind(this);
         this.createTilesArray = this.createTilesArray.bind(this);
         this.setDropShortcutId = this.setDropShortcutId.bind(this);
@@ -81,6 +91,8 @@ class App extends Component
         this.getTilesDivWidth = this.getTilesDivWidth.bind(this);
         this.editShortcut = this.editShortcut.bind(this);
         this.editFolder = this.editFolder.bind(this);
+        this.changeNotePosition = this.changeNotePosition.bind(this);  
+        this.changeNoteOpened = this.changeNoteOpened.bind(this);    
 
         this.main = createRef();
     }
@@ -90,7 +102,8 @@ class App extends Component
         this.setState({
             showShortcutForm: !this.state.showShortcutForm,
             showFolderForm: false,
-            showSettings: false
+            showSettings: false,
+            showNoteForm:false
         });
     }
 
@@ -98,6 +111,17 @@ class App extends Component
     {
         this.setState({
             showFolderForm: !this.state.showFolderForm,
+            showShortcutForm: false,
+            showSettings: false,
+            showNoteForm:false
+        });
+    }
+
+    showNoteForm()
+    {
+        this.setState({
+            showNoteForm: !this.state.showFolderForm,
+            showFolderForm:false,
             showShortcutForm: false,
             showSettings: false
         });
@@ -108,7 +132,8 @@ class App extends Component
         this.setState({
             showSettings: !this.state.showSettings,
             showFolderForm: false,
-            showShortcutForm: false
+            showShortcutForm: false,
+            showNoteForm:false
         });
     }
 
@@ -199,6 +224,32 @@ class App extends Component
             showFolderForm:false,
             tiles: tiles,
             folders: folders
+        });
+    }
+
+    addNote(name,contents,color)
+    {
+        let notes = this.state.notes;
+
+        let note = {
+            id:notes.length,
+            name: name,
+            note: contents,
+            color:color,
+            position:{
+                x:0,
+                y:15
+            },
+            opened:true,
+            width:200,
+            height:300
+        }
+
+        notes = [...notes,note];
+
+        this.setState({
+            showNoteForm:false,
+            notes: notes
         });
     }
 
@@ -556,12 +607,27 @@ class App extends Component
         });
     }
 
+    changeNotePosition(x,y,id)
+    {
+        let notes = this.state.notes;
+        notes[id].position = {x:x, y:y};
+        this.setState({notes:notes});
+    }
+
+    changeNoteOpened(opened,id)
+    {
+        let notes = this.state.notes;
+        notes[id].opened = opened;
+        this.setState({notes:notes});
+    }
+
     setToStorage(tiles,shortcuts,folders,settings)
     {
         localStorage.setItem("tiles",JSON.stringify(tiles));
         localStorage.setItem("shortcuts",JSON.stringify(shortcuts));
         localStorage.setItem("folders",JSON.stringify(folders));
         localStorage.setItem("settings",JSON.stringify(settings));
+        localStorage.setItem("notes",JSON.stringify(this.state.notes));
     }
 
     getTilesDivWidth()
@@ -618,6 +684,15 @@ class App extends Component
             />
         });
 
+        const notes = this.state.notes.map((e)=>{
+            return <Note
+                key={e.id} 
+                note={e}
+                changePosition={(x,y)=>this.changeNotePosition(x,y,e.id)}
+                changeOpened={(opened)=>this.changeNoteOpened(opened,e.id)}
+            />
+        })
+
         return(
             <main ref={this.main} style={{
                 height:(window.innerHeight)+"px", 
@@ -629,13 +704,15 @@ class App extends Component
                     <h1>Notecut</h1>
 
                     <div id="addShortcut" onClick={this.showShortcutForm}>
-                        <p>+</p>
-                        <p className="subText">Dodaj Skrót</p>
+                        <p className="subText">Add Shortcut</p>
                     </div>
 
                     <div id="addFolder" onClick={this.showFolderForm}>
-                        <p>+</p>
-                        <p className="subText">Dodaj Folder</p>
+                        <p className="subText">Add Folder</p>
+                    </div>
+
+                    <div id="addNote" onClick={this.showNoteForm}>
+                        <p className="subText">Add Note</p>
                     </div>
 
                     <div id="settings" onClick={this.showSettings}>
@@ -711,6 +788,21 @@ class App extends Component
                 }
 
                 {
+                    (this.state.showNoteForm || this.state.editNoteForm) && 
+                    <NoteForm 
+                        addNote = {(name,note,color)=>this.addNote(name,note,color)}
+                        cancel = {()=>this.setState({showNoteForm:false})}
+                        note = {this.state.editNoteForm ? this.state.notes[this.state.editShortcutId] : {
+                            id:-1,
+                            name: "",
+                            note: "",
+                            color: "#000000",
+                        }}
+                        editNote = {(name,desc,color) => this.editFolder(name,desc,color)}
+                    />
+                }
+
+                {
                     this.state.showSettings && 
                     <Settings 
                         cancel = {()=>this.setState({showSettings:false})}
@@ -727,6 +819,10 @@ class App extends Component
                         findShortcuts = {this.state.settings.findShortcuts}
                     />
                 }
+
+                {<div id="notes">
+                    {notes}
+                </div>}
 
                 <div 
                     className={"noFreeSpace" + (this.state.noFreeSpace ? " show" : "")} 

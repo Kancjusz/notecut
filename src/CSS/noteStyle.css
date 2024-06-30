@@ -1,0 +1,32 @@
+.noteHeader{
+    user-select: none;
+    color:gray;
+    mix-blend-mode: difference;
+    height: 40px;
+}
+
+.noteHeader h4:first-child {
+    float:left;
+}
+
+.noteHeader h4:last-child {
+    float:right;
+    cursor: pointer;
+}
+
+h4{
+    margin: 10px;
+}
+
+.noteContents{
+    user-select: none;
+    background-color: white;
+    border-radius: 10px;
+    height: 75%;
+    width: 80%;
+    padding: 10px;
+
+    position: relative;
+    left: 50%;
+    transform: translate(-50%,0);
+}
