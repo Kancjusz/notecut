@@ -92,7 +92,9 @@ class App extends Component
         this.editShortcut = this.editShortcut.bind(this);
         this.editFolder = this.editFolder.bind(this);
         this.changeNotePosition = this.changeNotePosition.bind(this);  
-        this.changeNoteOpened = this.changeNoteOpened.bind(this);    
+        this.changeNoteOpened = this.changeNoteOpened.bind(this); 
+        this.setNotesZIndex = this.setNotesZIndex.bind(this); 
+        this.setNoteSize = this.setNoteSize.bind(this);     
 
         this.main = createRef();
     }
@@ -242,7 +244,8 @@ class App extends Component
             },
             opened:true,
             width:200,
-            height:300
+            height:300,
+            zIndex:notes.length+10
         }
 
         notes = [...notes,note];
@@ -621,6 +624,28 @@ class App extends Component
         this.setState({notes:notes});
     }
 
+    setNotesZIndex(id)
+    {
+        let notes = this.state.notes;
+        let originalZIndex = notes[id].zIndex;
+
+        notes.forEach((e)=>{
+            if(e.zIndex > originalZIndex)
+                e.zIndex--;
+        });
+        notes[id].zIndex = notes.length+10;
+
+        this.setState({notes:notes});
+    }
+
+    setNoteSize(width,height,id)
+    {
+        let notes = this.state.notes;
+        notes[id].width = width;
+        notes[id].height = height;
+        this.setState({notes:notes});
+    }
+
     setToStorage(tiles,shortcuts,folders,settings)
     {
         localStorage.setItem("tiles",JSON.stringify(tiles));
@@ -690,6 +715,8 @@ class App extends Component
                 note={e}
                 changePosition={(x,y)=>this.changeNotePosition(x,y,e.id)}
                 changeOpened={(opened)=>this.changeNoteOpened(opened,e.id)}
+                setZIndex={()=>this.setNotesZIndex(e.id)}
+                setSize={(width,height)=>this.setNoteSize(width,height,e.id)}
             />
         })
 
@@ -820,9 +847,7 @@ class App extends Component
                     />
                 }
 
-                {<div id="notes">
-                    {notes}
-                </div>}
+                {notes}
 
                 <div 
                     className={"noFreeSpace" + (this.state.noFreeSpace ? " show" : "")} 

@@ -6,8 +6,62 @@ const Note = (props) => {
     const [move, _setMove] = useState(false);
     const [overArrow, _setOverArrow] = useState(false);
     const [isOver, _setIsOver] = useState(false);
-    const [posX, setPosX] = useState(props.note.position.x);
-    const [posY, setPosY] = useState(props.note.position.y);
+    const [isOverResizeX, _setIsOverResizeX] = useState(false);
+    const [isOverResizeY, _setIsOverResizeY] = useState(false);
+    const [resizeX, _setresizeX] = useState(false);
+    const [resizeY, _setresizeY] = useState(false);
+    const [posX, _setPosX] = useState(props.note.position.x);
+    const [posY, _setPosY] = useState(props.note.position.y);
+    const [noteWidth, _setWidth] = useState(props.note.width);
+    const [noteHeight, _setHeight] = useState(props.note.height);
+
+    const resizeXRef = useRef(resizeX);
+    const setresizeX = data => {
+        resizeXRef.current = data;
+        _setresizeX(data);
+    }
+
+    const resizeYRef = useRef(resizeY);
+    const setresizeY = data => {
+        resizeYRef.current = data;
+        _setresizeY(data);
+    }
+
+    const isOverResizeXRef = useRef(isOverResizeX);
+    const setIsOverResizeX = data => {
+        isOverResizeXRef.current = data;
+        _setIsOverResizeX(data);
+    }
+
+    const isOverResizeYRef = useRef(isOverResizeY);
+    const setIsOverResizeY = data => {
+        isOverResizeYRef.current = data;
+        _setIsOverResizeY(data);
+    }
+
+    const widthRef = useRef(noteWidth);
+    const setWidth = data => {
+        widthRef.current = data;
+        _setWidth(data);
+    }
+
+    const heightRef = useRef(noteHeight);
+    const setHeight = data => {
+        heightRef.current = data;
+        _setHeight(data);
+    }
+
+    const posXRef = useRef(posX);
+    const setPosX = data => {
+        posXRef.current = data;
+        _setPosX(data);
+    }
+
+    const posYRef = useRef(posY);
+    const setPosY = data => {
+        posYRef.current = data;
+        _setPosY(data);
+    }
 
     const isOverRef = useRef(isOver);
     const setIsOver = data => {
@@ -37,18 +91,18 @@ const Note = (props) => {
 
     const onMoseUp = (e) =>{
         if(moveRef.current){
-            const height = openedRef.current ? props.note.height/2 : 20;
+            const height = openedRef.current ? heightRef.current/2 : 20;
 
-            let x = e.pageX - props.note.width/2;
+            let x = e.pageX - widthRef.current/2;
             let y = e.pageY - height;
 
-            if(!(e.pageX + props.note.width/2 < window.innerWidth)) 
-                x = window.innerWidth - props.note.width;
-            else if(!(e.pageX - props.note.width/2 > 0)) 
+            if(!(e.pageX + widthRef.current/2 < window.innerWidth)) 
+                x = window.innerWidth - widthRef.current;
+            else if(!(e.pageX - widthRef.current/2 > 0)) 
                 x = 0;
 
             if(!(e.pageY + height < document.body.scrollHeight)) 
-                y = document.body.scrollHeight - props.note.height;
+                y = document.body.scrollHeight - heightRef.current;
             else if(!(e.pageY - height > window.innerHeight*0.15)) 
                 y = window.innerHeight*0.15;
 
@@ -59,9 +113,24 @@ const Note = (props) => {
         }
 
         setMove(false);
+        setresizeX(false);
+        setresizeY(false);
     }
 
     const onMoseDown = (e) =>{
+        if(isOverRef.current)
+            props.setZIndex();
+
+        if(isOverResizeXRef.current) {
+            setresizeX(true);
+            return;
+        }
+
+        if(isOverResizeYRef.current) {
+            setresizeY(true);
+            return;
+        }
+
         if(!isOverRef.current || overArrowRef.current) return;
 
         const x = e.pageX/window.innerWidth*100;
@@ -73,13 +142,44 @@ const Note = (props) => {
         setMove(true);
     }
 
+    const onMoseMove = (e) =>{
+        if(resizeXRef.current){
+            let width = e.pageX - (posXRef.current/100) * window.innerWidth;
+            setWidth(width);
+            props.setSize(width,heightRef.current);
+            return;
+        }
+
+        if(resizeYRef.current){
+            let height = e.pageY - (posYRef.current/100) * window.innerHeight;
+            setHeight(height);
+            props.setSize(widthRef.current,height);
+            return;
+        }
+
+        const height = openedRef.current ? heightRef.current/2 : 20;
+
+        if(!moveRef.current || !(e.pageX + widthRef.current/2 < window.innerWidth) 
+            || !(e.pageX - widthRef.current/2 > 0) 
+            || !(e.pageY + height < document.body.scrollHeight) 
+            || !(e.pageY - height > window.innerHeight*0.15)) return; 
+
+        const x = e.pageX/window.innerWidth*100;
+        const y = e.pageY/window.innerHeight*100;
+
+        setPosX(x);
+        setPosY(y);
+    }
+
     useEffect(()=>{
         window.addEventListener("mouseup",onMoseUp);
         window.addEventListener("mousedown",onMoseDown);
+        window.addEventListener("mousemove",onMoseMove);
 
         return()=>{
             window.removeEventListener("mouseup",onMoseUp);
             window.removeEventListener("mousedown",onMoseDown);
+            window.removeEventListener("mousemove",onMoseMove);
         };
     },[]);
 
@@ -89,38 +189,34 @@ const Note = (props) => {
             position:"absolute",
             top: posY+"%",
             left: posX+"%",
-            width: props.note.width + "px",
-            height: (opened ? props.note.height : 40) + "px",
+            width: noteWidth + "px",
+            height: (opened ? noteHeight : 40) + "px",
             transform: (!move) ? "none" : "translate(-50%,-50%)",
-            zIndex:100,
+            zIndex: props.note.zIndex,
             borderRadius:7+"px",
-            transition: "height 0.5s",
+            transition: resizeY ? "none" : "height 0.5s",
             overflow:"hidden"
         }} onMouseEnter={()=>{
             setIsOver(true);
         }} onMouseLeave={()=>{
             setIsOver(false);
-        }} onMouseMove={(e)=>{
-            const height = opened ? props.note.height/2 : 20;
-
-            if(!move || !(e.pageX + props.note.width/2 < window.innerWidth) 
-                || !(e.pageX - props.note.width/2 > 0) 
-                || !(e.pageY + height < document.body.scrollHeight) 
-                || !(e.pageY - height > window.innerHeight*0.15)) return; 
-
-            const x = e.pageX/window.innerWidth*100;
-            const y = e.pageY/window.innerHeight*100;
-
-            setPosX(x);
-            setPosY(y);
         }}>
             <div className="noteHeader">
                 <h4>{props.note.name}</h4>
                 <h4 onClick={()=>{setOpened(!opened); props.changeOpened(!opened)}} onMouseOver={()=>setOverArrow(true)} onMouseOut={()=>setOverArrow(false)}>{opened ? "▲" : "▼"}</h4>
             </div>
-            <div className="noteContents">
+            <div className="noteContents" style={{
+                width:noteWidth-40+"px",
+                height:noteHeight-80+"px"
+            }}>
                 <p dangerouslySetInnerHTML={{__html:contents}}></p>
             </div>
+            <div className="resizeBarX" onMouseOver={()=>setIsOverResizeX(true)} onMouseOut={()=>setIsOverResizeX(false)} style={{
+                left:noteWidth-10+"px"
+            }}></div>
+            {opened && <div className="resizeBarY" onMouseOver={()=>setIsOverResizeY(true)} onMouseOut={()=>setIsOverResizeY(false)} style={{
+                top:noteHeight-10+"px"
+            }}></div>}
         </div>
     );
 }

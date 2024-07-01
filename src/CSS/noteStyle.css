@@ -22,11 +22,32 @@ h4{
     user-select: none;
     background-color: white;
     border-radius: 10px;
-    height: 75%;
-    width: 80%;
     padding: 10px;
 
     position: relative;
     left: 50%;
     transform: translate(-50%,0);
+
+    overflow-y: auto;
 }
+
+.resizeBarX{
+    cursor:e-resize;
+    position: absolute;
+    left: 95%;
+    top: 50%;
+    transform: translate(0,-50%);
+    width: 10px;
+    height: 100%;
+}
+
+.resizeBarY{
+    cursor:n-resize;
+    position: absolute;
+    left: 50%;
+    top: 95%;
+    transform: translate(-50%,0%);
+    height: 10px;
+    width: 100%;
+}
+
