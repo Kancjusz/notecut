@@ -69,6 +69,8 @@ class App extends Component
             editFolderForm:false,
             editNoteForm:false,
 
+            updateLocalStorage:true,
+
             settings:settings
         }
 
@@ -91,10 +93,12 @@ class App extends Component
         this.getTilesDivWidth = this.getTilesDivWidth.bind(this);
         this.editShortcut = this.editShortcut.bind(this);
         this.editFolder = this.editFolder.bind(this);
+        this.editNote = this.editNote.bind(this);
         this.changeNotePosition = this.changeNotePosition.bind(this);  
         this.changeNoteOpened = this.changeNoteOpened.bind(this); 
         this.setNotesZIndex = this.setNotesZIndex.bind(this); 
-        this.setNoteSize = this.setNoteSize.bind(this);     
+        this.setNoteSize = this.setNoteSize.bind(this); 
+        this.deleteNote = this.deleteNote.bind(this);     
 
         this.main = createRef();
     }
@@ -292,6 +296,23 @@ class App extends Component
             folders:folders,
             editShortcutId:-1,
             editFolderForm:false
+        });
+    }
+
+    editNote(name,note,color)
+    {
+        let notes = this.state.notes;
+        let id = this.state.editShortcutId;
+
+        notes[id].name = name;
+        notes[id].note = note;
+        notes[id].color = color;
+
+
+        this.setState({
+            notes:notes,
+            editShortcutId:-1,
+            editNoteForm:false
         });
     }
 
@@ -627,6 +648,9 @@ class App extends Component
     setNotesZIndex(id)
     {
         let notes = this.state.notes;
+
+        console.log(id);
+
         let originalZIndex = notes[id].zIndex;
 
         notes.forEach((e)=>{
@@ -646,13 +670,27 @@ class App extends Component
         this.setState({notes:notes});
     }
 
-    setToStorage(tiles,shortcuts,folders,settings)
+    deleteNote(id)
+    {
+        let notes = [...this.state.notes];
+        notes.splice(id,1);
+        notes.forEach((e,i)=>{
+            e.id = i;     
+        });
+
+        localStorage.setItem("notes",JSON.stringify(notes));
+
+        this.setState({notes:[], updateLocalStorage:false});        
+    }
+
+    setToStorage(tiles,shortcuts,folders,settings,notes)
     {
         localStorage.setItem("tiles",JSON.stringify(tiles));
         localStorage.setItem("shortcuts",JSON.stringify(shortcuts));
         localStorage.setItem("folders",JSON.stringify(folders));
         localStorage.setItem("settings",JSON.stringify(settings));
-        localStorage.setItem("notes",JSON.stringify(this.state.notes));
+        if(this.state.updateLocalStorage)
+            localStorage.setItem("notes",JSON.stringify(notes));
     }
 
     getTilesDivWidth()
@@ -681,7 +719,8 @@ class App extends Component
 
     componentDidUpdate()
     {
-        this.setToStorage(this.state.tiles,this.state.shortcuts,this.state.folders,this.state.settings);
+        this.setToStorage(this.state.tiles,this.state.shortcuts,this.state.folders,this.state.settings,this.state.notes);
+        if(!this.state.updateLocalStorage) this.setState({notes:JSON.parse(localStorage.getItem("notes")),updateLocalStorage:true});
     }
 
     render()
@@ -705,18 +744,20 @@ class App extends Component
                     this.setDropShortcutId((e.hasShortcut ? e.shortcutId : e.folderId),e.id,inFolder,id,autoChangeTile)
                 } 
                 setGrabbed={(e)=>this.setGrabbed(e)}
-                setEditData={(id,isShortcut) => this.setState({editShortcutId:id,editShortcutForm:isShortcut,editFolderForm:!isShortcut})}
+                setEditData={(id,isShortcut) => this.setState({editShortcutId:id,editShortcutForm:isShortcut,editFolderForm:!isShortcut,editNoteForm:false})}
             />
         });
 
         const notes = this.state.notes.map((e)=>{
             return <Note
                 key={e.id} 
-                note={e}
+                note={{...e}}
                 changePosition={(x,y)=>this.changeNotePosition(x,y,e.id)}
                 changeOpened={(opened)=>this.changeNoteOpened(opened,e.id)}
                 setZIndex={()=>this.setNotesZIndex(e.id)}
                 setSize={(width,height)=>this.setNoteSize(width,height,e.id)}
+                editNote={()=>this.setState({editShortcutId:e.id,editShortcutForm:false,editFolderForm:false,editNoteForm:true})}
+                deleteNote={()=>this.deleteNote(e.id)}
             />
         })
 
@@ -825,7 +866,7 @@ class App extends Component
                             note: "",
                             color: "#000000",
                         }}
-                        editNote = {(name,desc,color) => this.editFolder(name,desc,color)}
+                        editNote = {(name,note,color) => this.editNote(name,note,color)}
                     />
                 }
 

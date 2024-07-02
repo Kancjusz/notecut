@@ -10,9 +10,9 @@ class NoteForm extends Component
     {
         super(props);
         this.state = {
-            name: "",
-            color: "",
-            note: "",
+            name: this.props.note.name,
+            color: this.props.note.color,
+            note: this.props.note.note,
 
             validationName: true,
         }
@@ -28,10 +28,7 @@ class NoteForm extends Component
         }
 
         if(this.props.note.id !== -1) this.setState({
-            validationName:false,
-            name: this.props.note.name,
-            note: this.props.note.note,
-            color: this.props.note.color
+            validationName:false
         })
     }
 
