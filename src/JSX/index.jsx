@@ -164,6 +164,7 @@ class App extends Component
             link: link,
             note: note,
             color: color,
+            inFolder:-1
         }
 
         let tiles = this.state.tiles;
@@ -330,7 +331,7 @@ class App extends Component
     }
 
     setDropShortcutId(shortcutId,tileId,inForm,shortuctInFormId,autoChangeTile)
-    {       
+    {  
         let tiles = this.state.tiles;
         let isShortcut = tiles[tileId].hasShortcut;
         let folders = this.state.folders;
@@ -348,7 +349,7 @@ class App extends Component
             let id = 0;
             for(let i = 0; i < folder.shortcuts.length; i++)
             {
-                if(folder.shortcuts[i].id === shortcutId)
+                if(this.state.shortcuts[folder.shortcuts[i]].id === shortcutId)
                 {
                     id = i;
                     break;
@@ -423,7 +424,7 @@ class App extends Component
 
     changeTile(id,state)
     {
-        if(this.state.dropShortcutId === -1 && state == null) return;
+        if(this.state.dropShortcutId === -1 && state == null) return;  
 
         let currentState = state == null ? this.state : state;
 
@@ -439,32 +440,27 @@ class App extends Component
         {    
             if(hasShortcut) 
             {
-                let shortcuts = this.state.shortcuts;
-                shortcuts[shortcutId] = null;
+                let folders = [...this.state.folders];
+                let shortcuts = [...this.state.shortcuts];
+                let newShortcuts = [];
 
-                let wasDeleted = false;
-                let deleteModifier = 0;
-                for(let i = 0; i < shortcuts.length;i++)
-                {
-                    if(shortcuts[i] == null)
+                newShortcuts = shortcuts.filter((e)=>e.id !== shortcutId);
+                newShortcuts.forEach((e,i)=>{
+                    if(e.inFolder === -1) 
+                        tiles[this.getTileIdByShortcutId(e.id)].shortcutId = i;
+                    else if(folders.length > 0)
                     {
-                        shortcuts.splice(i,1);
-                        i--;
-                        wasDeleted = true;
-                        deleteModifier++;
-                        continue;
+                        folders[e.inFolder].shortcuts = folders[e.inFolder].shortcuts.map((sc)=>{
+                            if(sc === e.id) 
+                                return sc-1;
+                        });
                     }
-
-                    if(wasDeleted)
-                    {
-                        let oldId = shortcuts[i].id;
-                        shortcuts[i].id = shortcuts[i].id - deleteModifier;
-                        tiles[this.getTileIdByShortcutId(oldId)].shortcutId = shortcuts[i].id;
-                    }
-                }
+                    e.id = i;
+                })         
 
                 this.setState({
-                    shortcuts:shortcuts,
+                    shortcuts:newShortcuts,
+                    folders:folders,
                     dropShortcutId:-1,
                     ogTileId:-1,
                     inFolder: false
@@ -475,73 +471,43 @@ class App extends Component
             {
                 let folders = this.state.folders;
                 let shortcuts = this.state.shortcuts;
+                let folder = folders[folderId];
 
-                if(folders[folderId].shortcuts.length > 0)
-                {
-                    let shortcutsInFolder = folders[folderId].shortcuts;
-                    for(let i=0;i<shortcuts.length;i++)
+                let newFolders = folders.filter((e)=>e.id !== folderId);
+                newFolders.forEach((e,i)=>{
+                    tiles[this.getTileIdByFolderId(e.id)].folderId = i;
+                    e.id = i;
+                    shortcuts = shortcuts.map((sc)=>{
+                        let newSc = {...sc};
+                        if(e.shortcuts.filter((sc2)=>newSc.id === sc2).length > 0)
+                            newSc.inFolder = i;
+                        return newSc;
+                    });
+                })
+                console.log(newFolders);
+                console.log(shortcuts);
+
+                let newShortcuts = shortcuts.filter((e)=>folder.shortcuts.filter((sc)=>e.id === sc).length <= 0);
+                newShortcuts.forEach((e,i)=>{
+                    if(e.inFolder === -1) 
+                        tiles[this.getTileIdByShortcutId(e.id)].shortcutId = i;
+                    else if(newFolders.length > 0)
                     {
-                        for(let j = 0;j < shortcutsInFolder.length;j++)
-                        {
-                            if(shortcuts[i].id === shortcutsInFolder[j].id)
-                            {
-                                shortcuts[i] = null;
-                                break;
-                            }
-                        }
+                        newFolders[e.inFolder].shortcuts = newFolders[e.inFolder].shortcuts.map((sc)=>{
+                            if(sc === e.id) 
+                                return sc-1;
+                        });
                     }
-                }
+                    e.id = i;
+                });
 
-                let tiles = this.state.tiles;
-
-                let wasDeleted = false;
-                let deleteModifier = 0;
-                for(let i = 0; i < shortcuts.length;i++)
-                {
-                    if(shortcuts[i] == null)
-                    {
-                        shortcuts.splice(i,1);
-                        i--;
-                        wasDeleted = true;
-                        deleteModifier++;
-                        continue;
-                    }
-
-                    if(wasDeleted)
-                    {
-                        let oldId = shortcuts[i].id;
-                        shortcuts[i].id = shortcuts[i].id - deleteModifier;
-                        tiles[this.getTileIdByShortcutId(oldId)].shortcutId = shortcuts[i].id;
-                    }
-                }
-
-                folders[folderId] = null;
-
-                wasDeleted = false;
-                deleteModifier = 0;
-                for(let i = 0; i < folders.length;i++)
-                {
-                    if(folders[i] == null)
-                    {
-                        folders.splice(i,1);
-                        i--;
-                        wasDeleted = true;
-                        deleteModifier++;
-                        continue;
-                    }
-
-                    if(wasDeleted)
-                    {
-                        let oldId = folders[i].id;
-                        folders[i].id = folders[i].id - deleteModifier;
-                        tiles[this.getTileIdByFolderId(oldId)].folderId = folders[i].id;
-                    }
-                }
+                console.log(newFolders);
+                console.log(newShortcuts);
 
                 this.setState({
                     tiles:tiles,
-                    folders:folders,
-                    shortcuts:shortcuts,
+                    folders:newFolders,
+                    shortcuts:newShortcuts,
                     dropShortcutId:-1,
                     ogTileId:-1,
                     inFolder: false
@@ -561,7 +527,8 @@ class App extends Component
         }
 
 
-        let folders = this.state.folders;
+        let folders = [...this.state.folders];
+        let stateShortcuts = [...this.state.shortcuts];
 
         if(tiles[id].hasShortcut || (tiles[id].hasFolder && hasFolder))
         {
@@ -576,7 +543,7 @@ class App extends Component
                 }
 
                 let shortcuts = folders[tiles[this.state.ogTileId].folderId].shortcuts;
-                shortcuts = [...shortcuts,this.state.shortcuts[tiles[id].shortcutId]];
+                shortcuts = [...shortcuts,this.state.shortcuts[tiles[id].shortcutId].id];
 
                 folders[tiles[this.state.ogTileId].folderId].shortcuts = shortcuts;
             }
@@ -596,16 +563,14 @@ class App extends Component
         {
             let folder = folders[tiles[id].folderId];
 
-            if(folder.shortcuts.length > 0 &&
-            folder.shortcuts[folder.shortcuts.length-1].id === this.state.shortcuts[shortcutId].id) 
+            if(folder.shortcuts.length > 0 && this.state.shortcuts[folder.shortcuts[folder.shortcuts.length-1]].id === this.state.shortcuts[shortcutId].id) 
                 return;
 
-            let shortcuts = folder.shortcuts;
-            let shortcut = this.state.shortcuts[shortcutId];
+            let shortcut = stateShortcuts[shortcutId];
+            shortcut.inFolder = folder.id;
+            stateShortcuts[shortcutId] = shortcut;
 
-            shortcuts = [...shortcuts,shortcut];
-
-            folder.shortcuts = shortcuts;
+            folder.shortcuts.push(shortcut.id);
 
             folders[tiles[id].folderId] = folder;
 
@@ -622,13 +587,17 @@ class App extends Component
             folderId:folderId
         }
 
+        if(stateShortcuts.length > 0 && hasShortcut) stateShortcuts[shortcutId].inFolder = -1;
+
         this.setState({
             tiles:tiles,
             dropShortcutId:-1,
             folders:folders,
+            shortcuts:stateShortcuts,
             ogTileId:-1,
             inFolder: false
         });
+
     }
 
     changeNotePosition(x,y,id)
@@ -726,6 +695,10 @@ class App extends Component
     render()
     {
         const tileList = this.state.tiles.map((e)=>{
+            let folder = e.hasFolder ? {...this.state.folders[e.folderId]} : {};
+            if(e.hasFolder)
+                folder.shortcuts = folder.shortcuts.map((e)=>typeof e === "number" ? this.state.shortcuts[e] : e);
+
             return <Tile 
                 key={e.id} 
                 id={e.id}
@@ -737,7 +710,7 @@ class App extends Component
                 isGrabbed={this.state.isGrabbed} 
                 backgroundColor={this.state.settings.tilesColor}
                 shortcut={e.hasShortcut ? this.state.shortcuts[e.shortcutId]:{}}
-                folder={e.hasFolder ? this.state.folders[e.folderId]:{}}
+                folder={folder}
                 changeTile={()=>this.changeTile(e.id,null)}
                 setDropShortcutId={
                     (inFolder,id,autoChangeTile)=>
