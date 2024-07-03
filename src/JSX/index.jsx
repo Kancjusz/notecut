@@ -484,8 +484,6 @@ class App extends Component
                         return newSc;
                     });
                 })
-                console.log(newFolders);
-                console.log(shortcuts);
 
                 let newShortcuts = shortcuts.filter((e)=>folder.shortcuts.filter((sc)=>e.id === sc).length <= 0);
                 newShortcuts.forEach((e,i)=>{
@@ -500,9 +498,6 @@ class App extends Component
                     }
                     e.id = i;
                 });
-
-                console.log(newFolders);
-                console.log(newShortcuts);
 
                 this.setState({
                     tiles:tiles,

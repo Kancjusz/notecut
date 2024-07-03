@@ -127,9 +127,9 @@ const Note = (props) => {
             props.changePosition(x/window.innerWidth*100,y/window.innerHeight*100);
         }
 
-        setMove(false);
         setresizeX(false);
         setresizeY(false);
+        setMove(false);
     }
 
     const onMoseDown = (e) =>{
@@ -238,7 +238,16 @@ const Note = (props) => {
             }}>
                 <div className="noteHeader">
                     <h4>{props.note.name}</h4>
-                    <h4 onClick={()=>{setOpened(!opened); props.changeOpened(!opened)}} onMouseOver={()=>setOverArrow(true)} onMouseOut={()=>setOverArrow(false)}>{opened ? "▲" : "▼"}</h4>
+                    <h4 onClick={()=>{
+                        setOpened(!opened); 
+                        let posYPx = window.innerHeight * (posY/100);
+                        if(posYPx + noteHeight > window.innerHeight){
+                            let newPosY = (posYPx - (posYPx + noteHeight - window.innerHeight))/window.innerHeight*100;
+                            setPosY(newPosY);
+                            props.changePosition(posX,newPosY);
+                        }
+                        props.changeOpened(!opened);
+                    }} onMouseOver={()=>setOverArrow(true)} onMouseOut={()=>setOverArrow(false)}>{opened ? "▲" : "▼"}</h4>
                 </div>
                 <div className="noteContents" style={{
                     width:noteWidth-40+"px",
