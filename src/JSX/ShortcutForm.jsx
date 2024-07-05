@@ -26,10 +26,6 @@ class ShortcutForm extends Component
 
     componentDidMount()
     {
-        if(this.form.current !== null)
-        {
-            setTimeout(()=>this.form.current.classList.add("middle"),10); 
-        }
 
         if(this.props.shortcut.id !== -1) this.setState({
             validationName:false,

@@ -16,6 +16,8 @@ class Folder extends Component{
             mouseDown:false,
             showContents:false,
             isClick:false,
+            ogName:this.props.name,
+            newName:this.props.name,
 
             isScrollHeight:false,
             isScrollWidth:false,
@@ -36,9 +38,11 @@ class Folder extends Component{
         this.setIsOver = this.setIsOver.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
+        this.onResize = this.onResize.bind(this);
         this.getTilesWindowOffset = this.getTilesWindowOffset.bind(this);
 
         this.folder = createRef();
+        this.name = createRef();
     }
 
     setIsOver(val)
@@ -82,12 +86,20 @@ class Folder extends Component{
 
     onMouseMove(e)
     {
+        let mouse = {pageX:e.pageX, pageY:e.pageY};
         this.setState({isClick:false})
-        if(this.state.mouseDown && (e.pageX + this.props.width/2 < window.innerWidth) 
-            && (e.pageX - this.props.width/2 > 0) 
-            && (e.pageY + this.props.height/2 < document.body.scrollHeight) 
-            && (e.pageY - this.props.height/2 > window.innerHeight*0.15))
-            this.setPosition(e);
+        if(!this.state.mouseDown) return;
+        if(e.pageX + this.props.width/2 > window.innerWidth)
+            mouse.pageX = window.innerWidth - this.props.width/2;
+        else if(e.pageX - this.props.width/2 < 0) 
+            mouse.pageX = this.props.width/2;
+
+        if(e.pageY + this.props.height/2 > document.body.scrollHeight) 
+            mouse.pageY = document.body.scrollHeight - this.props.height/2;
+        else if(e.pageY - this.props.height/2 < this.props.headerHeight)
+            mouse.pageY = this.props.headerHeight + this.props.height/2;
+
+        this.setPosition(mouse);
     }
 
     onMouseDown(e)
@@ -128,16 +140,34 @@ class Folder extends Component{
             this.setState({showContents:false});
     }
 
+    onResize()
+    {
+        if(this.name.current === null) return;
+        this.setState({newName:this.props.name});
+    }
+
     componentDidMount()
     {
         document.addEventListener("mousemove",this.onMouseMove);
         document.addEventListener("mousedown",this.onMouseDown);
+        window.addEventListener("resize",this.onResize);
     }
 
     componentWillUnmount()
     {
         document.removeEventListener("mousemove",this.onMouseDown);
         document.removeEventListener("mousedown",this.onMouseDown);
+        window.removeEventListener("resize",this.onResize);
+    }
+
+    componentDidUpdate()
+    {
+        if(this.state.ogName !== this.props.name) this.setState({ogName:this.props.name, newName:this.props.name});
+        if(this.name.current === null) return;
+        if(this.name.current.scrollWidth > this.name.current.clientWidth)
+        {
+            this.setState({newName:this.name.current.innerText.substring(0,this.name.current.innerText.length-4) + "..."});
+        }
     }
 
     render()
@@ -234,7 +264,7 @@ class Folder extends Component{
                 />}
 
                 {!this.state.showContents && <img src={folderImg}/>}
-                {!this.state.showContents && <p>{this.props.name.length > 10 ? this.props.name.substring(0,10)+"..." : this.props.name} </p>}
+                {!this.state.showContents && <p ref={this.name}>{this.state.newName} </p>}
                 
                 {this.state.showEdit && <EditShortcut
                     posX={this.state.currentMousePos.x}

@@ -47,9 +47,10 @@ class App extends Component
             tiles:tiles,
             notes:notes,
 
-            tileHeight:((window.innerHeight)*0.7)/8,
+            tileHeight:((919)*0.7)/8,
             tileWidth:tilesDivWidth/12,
             tilesWindowWidth:1920*0.5,
+            headerheight:137,
 
             showShortcutForm:false,
             showFolderForm:false,
@@ -126,7 +127,7 @@ class App extends Component
     showNoteForm()
     {
         this.setState({
-            showNoteForm: !this.state.showFolderForm,
+            showNoteForm: !this.state.showNoteForm,
             showFolderForm:false,
             showShortcutForm: false,
             showSettings: false
@@ -451,8 +452,9 @@ class App extends Component
                     else if(folders.length > 0)
                     {
                         folders[e.inFolder].shortcuts = folders[e.inFolder].shortcuts.map((sc)=>{
-                            if(sc === e.id) 
-                                return sc-1;
+                            if(sc !== i) 
+                                return i;
+                            return sc;
                         });
                     }
                     e.id = i;
@@ -492,8 +494,9 @@ class App extends Component
                     else if(newFolders.length > 0)
                     {
                         newFolders[e.inFolder].shortcuts = newFolders[e.inFolder].shortcuts.map((sc)=>{
-                            if(sc === e.id) 
-                                return sc-1;
+                            if(sc !== i) 
+                                return i;
+                            return sc;
                         });
                     }
                     e.id = i;
@@ -665,9 +668,10 @@ class App extends Component
     updateDimensions()
     {
         let tilesDivWidth = this.getTilesDivWidth();
-        let tilesDivHeight = window.innerHeight*0.7;
 
-        this.setState({ tileWidth: tilesDivWidth/12, tileHeight: (tilesDivHeight)/8, tilesWindowWidth: tilesDivWidth});
+        console.log(tilesDivWidth);
+
+        this.setState({ tileWidth: tilesDivWidth/12, tilesWindowWidth: tilesDivWidth});
     }
 
     componentDidMount()
@@ -706,6 +710,7 @@ class App extends Component
                 backgroundColor={this.state.settings.tilesColor}
                 shortcut={e.hasShortcut ? this.state.shortcuts[e.shortcutId]:{}}
                 folder={folder}
+                headerHeight={this.state.headerheight}
                 changeTile={()=>this.changeTile(e.id,null)}
                 setDropShortcutId={
                     (inFolder,id,autoChangeTile)=>
@@ -726,6 +731,7 @@ class App extends Component
                 setSize={(width,height)=>this.setNoteSize(width,height,e.id)}
                 editNote={()=>this.setState({editShortcutId:e.id,editShortcutForm:false,editFolderForm:false,editNoteForm:true})}
                 deleteNote={()=>this.deleteNote(e.id)}
+                headerHeight={this.state.headerheight}
             />
         })
 
@@ -736,6 +742,7 @@ class App extends Component
                 }}>
                 <header style={{
                     background: this.state.settings.headerColor,
+                    height: this.state.headerheight
                 }}>
                     <h1>Notecut</h1>
 
@@ -771,7 +778,7 @@ class App extends Component
                     animation: this.state.settings.animate ? "animatedgradient 10s linear alternate infinite" : "none",
                 }}>
                     <div id="tiles" style={{
-                        height:(window.innerHeight*0.7)+"px", 
+                        height:(644)+"px", 
                         width:(this.state.tilesWindowWidth)+"px",
                         background: this.state.settings.tilesColor
                     }}>

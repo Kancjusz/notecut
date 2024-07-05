@@ -1,10 +1,22 @@
+@keyframes openForm {
+    from {top:-50%}
+    to {top: 50%;}
+}
+
+@media (max-height: 700px){
+    form{
+        transform: translate(-50%,-25%);
+    }
+}
+@media (min-height: 700px){
+    form{
+        transform: translate(-50%,-50%);
+    }
+}
+
 .wrong{
     color: darkred;
     background-color: rgb(170, 48, 48);
-}
-
-.middle{
-    top: 50%;
 }
 
 .buttons{
@@ -98,11 +110,11 @@ span{
 
 form{
     transition: all 0.5s ease-out;
+    animation: openForm 0.7s ease-in-out forwards;
 
     position: absolute;
-    top: -50%;
+    top: 50%;
     left: 50%;
-    transform: translate(-50%,-50%);
 
     background-color: rgba(0, 0, 0, 0.616);
 

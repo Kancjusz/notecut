@@ -22,11 +22,6 @@ class NoteForm extends Component
 
     componentDidMount()
     {
-        if(this.form.current !== null)
-        {
-            setTimeout(()=>this.form.current.classList.add("middle"),10); 
-        }
-
         if(this.props.note.id !== -1) this.setState({
             validationName:false
         })

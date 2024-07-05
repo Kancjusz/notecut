@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, createRef } from "react";
 import "../CSS/shortcutStyle.css"
 import EditShortcut from "./EditShortcut";
 class Shortcut extends Component{
@@ -8,10 +8,12 @@ class Shortcut extends Component{
 
         this.state={
             xPos:window.innerWidth/2,
-            yPos:window.innerHeight/2,
+            yPos:document.body.scrollHeight/2,
             isOver:false,
             mouseDown:false,
             isClick:false,
+            ogName:this.props.name,
+            newName:this.props.name,
 
             showEdit:false,
             currentMousePos:{
@@ -21,7 +23,7 @@ class Shortcut extends Component{
 
             tempPos:{
                 x:window.innerWidth/2,
-                y:window.innerHeight/2,
+                y:document.body.scrollHeight/2,
             }
         }
 
@@ -29,7 +31,10 @@ class Shortcut extends Component{
         this.setIsOver = this.setIsOver.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
+        this.onResize = this.onResize.bind(this);
         this.getTilesWindowOffset = this.getTilesWindowOffset.bind(this);
+
+        this.name = createRef();
     }
 
     setIsOver(val)
@@ -53,12 +58,20 @@ class Shortcut extends Component{
 
     onMouseMove(e)
     {
+        let mouse = {pageX:e.pageX, pageY:e.pageY};
         this.setState({isClick:false})
-        if(this.state.mouseDown && (e.pageX + this.props.width/2 < window.innerWidth) 
-        && (e.pageX - this.props.width/2 > 0) 
-        && (e.pageY + this.props.height/2 < document.body.scrollHeight) 
-        && (e.pageY - this.props.height/2 > window.innerHeight*0.15))
-            this.setPosition(e);
+        if(!this.state.mouseDown) return;
+        if(e.pageX + this.props.width/2 > window.innerWidth)
+            mouse.pageX = window.innerWidth - this.props.width/2;
+        else if(e.pageX - this.props.width/2 < 0) 
+            mouse.pageX = this.props.width/2;
+
+        if(e.pageY + this.props.height/2 > document.body.scrollHeight) 
+            mouse.pageY = document.body.scrollHeight - this.props.height/2;
+        else if(e.pageY - this.props.height/2 < this.props.headerHeight)
+            mouse.pageY = this.props.headerHeight + this.props.height/2;
+
+        this.setPosition(mouse);
     }
 
     onMouseDown(e)
@@ -67,16 +80,34 @@ class Shortcut extends Component{
         else if(this.state.showEdit) this.setState({showEdit:false});
     }
 
+    onResize()
+    {
+        if(this.name.current === null) return;
+        this.setState({newName:this.props.name});
+    }
+
     componentDidMount()
     {
         document.addEventListener("mousemove",this.onMouseMove);
         document.addEventListener("mousedown",this.onMouseDown);
+        window.addEventListener("resize",this.onResize);
     }
 
     componentWillUnmount()
     {
-        document.removeEventListener("mousemove",this.onMouseMove);
-        document.addEventListener("mousedown",this.onMouseDown);
+        document.removeEventListener("mousemove",this.onMouseDown);
+        document.removeEventListener("mousedown",this.onMouseDown);
+        window.removeEventListener("resize",this.onResize);
+    }
+
+    componentDidUpdate()
+    {
+        if(this.state.ogName !== this.props.name) this.setState({ogName:this.props.name, newName:this.props.name});
+        if(this.name.current === null) return;
+        if((this.name.current.scrollWidth > (this.props.width*0.85)) && this.name.current.scrollWidth > this.name.current.clientWidth)
+        {
+            this.setState({newName:this.name.current.innerText.substring(0,this.name.current.innerText.length-4) + "..."});
+        }
     }
 
     getTilesWindowOffset()
@@ -107,7 +138,7 @@ class Shortcut extends Component{
         ? this.props.link : "https://"+this.props.link;
 
         let tilesOffset = this.getTilesWindowOffset();
-        let outside = this.state.yPos < tilesOffset.top || this.state.yPos > window.innerHeight-tilesOffset.bottom
+        let outside = this.state.yPos < tilesOffset.top || this.state.yPos > document.body.scrollHeight-tilesOffset.bottom
                         || this.state.xPos < tilesOffset.left || this.state.xPos > window.innerWidth-tilesOffset.left;
         let descriptionTab = this.props.note.split(" ");
         let description = "";
@@ -205,7 +236,7 @@ class Shortcut extends Component{
             >
 
                 <img src={icon}/>
-                <p>{this.props.name.length > 10 ? this.props.name.substring(0,10)+"..." : this.props.name}</p>
+                <p ref={this.name}>{this.state.newName} </p>
 
                 {this.state.showEdit && <EditShortcut
                     posX={this.state.currentMousePos.x}

@@ -48,8 +48,8 @@ class Tile extends Component{
         let leftOffset = offset.left;
         let topOffset = offset.top;
 
-        if((e.clientX > leftOffset && e.clientX < leftOffset + this.tile.current.offsetWidth)
-            && (e.clientY > topOffset && e.clientY < topOffset + this.tile.current.offsetHeight))
+        if((e.pageX > leftOffset && e.pageX < leftOffset + this.tile.current.offsetWidth)
+            && (e.pageY > topOffset && e.pageY < topOffset + this.tile.current.offsetHeight))
             this.setState({liesIn:true});
         else
             this.setState({liesIn:false});
@@ -126,6 +126,7 @@ class Tile extends Component{
                             isGrabbed={(e)=>this.props.setGrabbed(e)}
                             setEditData={this.props.setEditData}
                             inFolder={false}
+                            headerHeight={this.props.headerHeight}
                         />
                     }
                     {
@@ -143,6 +144,7 @@ class Tile extends Component{
                             isGrabbed={(e)=>this.props.setGrabbed(e)}
                             setEditData={this.props.setEditData}
                             changeTile={this.props.changeTile}
+                            headerHeight={this.props.headerHeight}
                         />
                     }
                 </div>     

@@ -87,14 +87,6 @@ class Settings extends Component
         this.form = createRef();
     }
 
-    componentDidMount()
-    {
-        if(this.form.current !== null)
-        {
-            setTimeout(()=>this.form.current.classList.add("middle"),10); 
-        }
-    }
-
     render()
     {
 

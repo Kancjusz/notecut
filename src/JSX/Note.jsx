@@ -118,8 +118,8 @@ const Note = (props) => {
 
             if(!(e.pageY + height < document.body.scrollHeight)) 
                 y = document.body.scrollHeight - heightRef.current;
-            else if(!(e.pageY - height > window.innerHeight*0.15)) 
-                y = window.innerHeight*0.15;
+            else if(!(e.pageY - height > props.headerHeight)) 
+                y = props.headerHeight;
 
             setPosX(x/window.innerWidth*100);
             setPosY(y/window.innerHeight*100);
@@ -194,22 +194,45 @@ const Note = (props) => {
         if(e.pageX + widthRef.current/2 > window.innerWidth) x = (window.innerWidth - widthRef.current/2)/window.innerWidth*100;
         else if(e.pageX - widthRef.current/2 < 0) x = widthRef.current/2/window.innerWidth*100;
 
-        if(e.pageY + height > document.body.scrollHeight) y = (document.body.scrollHeight - height)/document.body.scrollHeight*100;
-        else if(e.pageY - height < window.innerHeight*0.15) y = (height + window.innerHeight*0.15)/document.body.scrollHeight*100;
+        if(e.pageY + height > document.body.scrollHeight) y = (document.body.scrollHeight - height)/window.innerHeight*100;
+        else if(e.pageY - height < props.headerHeight) y = (height + props.headerHeight)/window.innerHeight*100;
 
         setPosX(x);
         setPosY(y);
+    }
+
+    const onResize = () =>{
+        const height = openedRef.current ? heightRef.current : 40;
+        let x = posXRef.current/100*window.innerWidth;
+        let y = posYRef.current/100*window.innerHeight;
+
+        if(x + widthRef.current > window.innerWidth) 
+            x = (window.innerWidth - widthRef.current);
+
+        if(y + height > document.body.scrollHeight)
+            y = (document.body.scrollHeight - height);
+        if(y < props.headerHeight) 
+            y = props.headerHeight;
+
+        x = x/window.innerWidth*100;
+        y = y/window.innerHeight*100;
+
+        setPosX(x);
+        setPosY(y);
+        props.changePosition(x,y);
     }
 
     useEffect(()=>{
         window.addEventListener("mouseup",onMoseUp);
         window.addEventListener("mousedown",onMoseDown);
         window.addEventListener("mousemove",onMoseMove);
+        window.addEventListener("resize",onResize);
 
         return()=>{
             window.removeEventListener("mouseup",onMoseUp);
             window.removeEventListener("mousedown",onMoseDown);
             window.removeEventListener("mousemove",onMoseMove);
+            window.removeEventListener("resize",onResize);
         };
     },[]);
 
@@ -241,8 +264,8 @@ const Note = (props) => {
                     <h4 onClick={()=>{
                         setOpened(!opened); 
                         let posYPx = window.innerHeight * (posY/100);
-                        if(posYPx + noteHeight > window.innerHeight){
-                            let newPosY = (posYPx - (posYPx + noteHeight - window.innerHeight))/window.innerHeight*100;
+                        if(posYPx + noteHeight > document.body.scrollHeight){
+                            let newPosY = (posYPx - (posYPx + noteHeight - document.body.scrollHeight))/window.innerHeight*100;
                             setPosY(newPosY);
                             props.changePosition(posX,newPosY);
                         }
