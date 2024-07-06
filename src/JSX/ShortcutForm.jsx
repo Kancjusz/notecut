@@ -41,7 +41,7 @@ class ShortcutForm extends Component
     {
         return(
             <form ref={this.form}>
-                <label>Nazwa</label><br/>
+                <label>Name</label><br/>
                 <input defaultValue={this.props.shortcut.name} onChange={(e)=>{
                     this.setState({name:e.target.value});
                     this.setState({validationName: checkIfEmptyString(e.target)}); 
@@ -53,12 +53,12 @@ class ShortcutForm extends Component
                     this.setState({validationLink: checkIfEmptyString(e.target)}); 
                 }}/><br/>
 
-                <label>Opis</label><br/>
+                <label>Description</label><br/>
                 <textarea defaultValue={this.props.shortcut.note} onChange={(e)=>{
                     this.setState({note:e.target.value});
                 }}></textarea><br/>
 
-                <label>Kolor</label><br/>
+                <label>Color</label><br/>
                 <input type="color" defaultValue={this.props.shortcut.color} onChange={(e)=>{
                     this.setState({color:e.target.value});
                 }}/><br/>
@@ -73,8 +73,8 @@ class ShortcutForm extends Component
                             else
                                 this.props.editShortcut(this.state.name,this.state.link,this.state.note,this.state.color);
                         }
-                    }>Utwórz Skrót</button>
-                    <button onClick={this.props.cancel}>Anuluj</button>
+                    }>{this.props.shortcut.id === -1 ? "Create Shortcut" : "Edit Shortcut"}</button>
+                    <button onClick={this.props.cancel}>Cancel</button>
                 </div>
 
             </form>

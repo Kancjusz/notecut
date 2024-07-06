@@ -1,4 +1,4 @@
-import React, { createRef, useState } from "react";
+import React, { createRef, useEffect, useState } from "react";
 import { Component } from "react";
 import {checkIfEmptyString} from "../Scripts/validation.js"
 import ColorPicker from 'react-best-gradient-color-picker'
@@ -8,11 +8,18 @@ import duckLogo from "../img/duckLogo.png"
 import "../CSS/shortcutFormStyle.css"
 
 const ColorPopup = (props) =>{
-    const [showColor, setShowColor] = useState(false);
+    const [showColor, setShowColor] = useState(props.show);
+
+    useEffect(() => {
+        setShowColor(props.show);
+    }, [props])
 
     return(
         <div>
-            <div onClick={()=>setShowColor(!showColor)} className="colorPicker" style={{
+            <div onClick={()=>{
+                props.setShow(!showColor); 
+                setShowColor(!showColor);
+            }} className="colorPicker" style={{
                 width:80+"%",backgroundColor:"whitesmoke", opacity:1, padding:5+"px", position:"relative",
                 left:""
             }}>
@@ -83,7 +90,14 @@ class Settings extends Component
             newTab:this.props.newTab,
             findShortcuts:this.props.findShortcuts,
             separateNotes:this.props.separateNotes,
-            displayNotesOpen:this.props.displayNotesOpen
+            displayNotesOpen:this.props.displayNotesOpen,
+
+            colorPopupsShow:{
+                show1:false,
+                show2:false,
+                show3:false,
+                show4:false
+            }
         }
 
         this.form = createRef();
@@ -96,17 +110,32 @@ class Settings extends Component
             <form ref={this.form}>
 
                 <label>Header Color</label><br/>
-                <ColorPopup colorState={this.state.headerColor} colorStateChange={(e)=>{
+                <ColorPopup show={this.state.colorPopupsShow.show1} setShow={(show)=>{this.setState({colorPopupsShow:{
+                    show1:show,
+                    show2:false,
+                    show3:false,
+                    show4:false
+                }})}} colorState={this.state.headerColor} colorStateChange={(e)=>{
                     this.setState({headerColor:e});
                 }}/><br/>
 
                 <label>Content Color</label><br/>
-                <ColorPopup colorState={this.state.contentColor} colorStateChange={(e)=>{
+                <ColorPopup show={this.state.colorPopupsShow.show2} setShow={(show)=>{this.setState({colorPopupsShow:{
+                    show1:false,
+                    show2:show,
+                    show3:false,
+                    show4:false
+                }})}} colorState={this.state.contentColor} colorStateChange={(e)=>{
                     this.setState({contentColor:e});
                 }}/><br/>
 
                 <label>Tiles Color</label><br/>
-                <ColorPopup colorState={this.state.tilesColor} colorStateChange={(e)=>{
+                <ColorPopup show={this.state.colorPopupsShow.show3} setShow={(show)=>{this.setState({colorPopupsShow:{
+                    show1:false,
+                    show2:false,
+                    show3:show,
+                    show4:false
+                }})}} colorState={this.state.tilesColor} colorStateChange={(e)=>{
                     this.setState({tilesColor:e});
                 }}/><br/>
 
@@ -116,7 +145,12 @@ class Settings extends Component
                 }}/><br/>
 
                 <label>Border Color</label><br/>
-                <ColorPopup colorState={this.state.borderColor} colorStateChange={(e)=>{
+                <ColorPopup show={this.state.colorPopupsShow.show4} setShow={(show)=>{this.setState({colorPopupsShow:{
+                    show1:false,
+                    show2:false,
+                    show3:false,
+                    show4:show
+                }})}} colorState={this.state.borderColor} colorStateChange={(e)=>{
                     this.setState({borderColor:e});
                 }}/><br/>
 

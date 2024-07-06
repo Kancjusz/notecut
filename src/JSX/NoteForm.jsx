@@ -57,7 +57,7 @@ class NoteForm extends Component
                             else
                                 this.props.editNote(this.state.name,this.state.note,this.state.color);
                         }
-                    }>Create Note</button>
+                    }>{this.props.note.id === -1 ? "Create Note" : "Edit Note"}</button>
                     <button onClick={this.props.cancel}>Cancel</button>
                 </div>
             </form>

@@ -36,18 +36,18 @@ class FolderForm extends Component
 
         return(
             <form ref={this.form}>
-                <label>Nazwa</label><br/>
+                <label>Name</label><br/>
                 <input defaultValue={this.props.folder.name} onChange={(e)=>{
                     this.setState({name:e.target.value});
                     this.setState({validationName: checkIfEmptyString(e.target)}); 
                 }}/><br/>
 
-                <label>Opis</label><br/>
+                <label>Description</label><br/>
                 <textarea defaultValue={this.props.folder.note} onChange={(e)=>{
                     this.setState({note:e.target.value});
                 }}></textarea><br/>
 
-                <label>Kolor</label><br/>
+                <label>Color</label><br/>
                 <input type="color" defaultValue={this.props.folder.color} onChange={(e)=>{
                     this.setState({color:e.target.value});
                 }}/><br/>
@@ -61,8 +61,8 @@ class FolderForm extends Component
                             else
                                 this.props.editFolder(this.state.name,this.state.note,this.state.color);
                         }
-                    }>Utwórz Folder</button>
-                    <button onClick={this.props.cancel}>Anuluj</button>
+                    }>{this.props.folder.id === -1 ? "Create Folder" : "Edit Folder"}</button>
+                    <button onClick={this.props.cancel}>Cancel</button>
                 </div>
             </form>
         )
