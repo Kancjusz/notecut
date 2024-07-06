@@ -309,6 +309,7 @@ header h1{
     left: 50%;
     transform: translate(-50%,0%);
     border-radius: 17px;
+    margin-top: 40px;
 }
 
 .subText{
@@ -352,4 +353,36 @@ header h1{
     opacity: 1;
 
     z-index: 50;
+}
+
+.noteDisplay{
+    position: absolute;
+    top: 137px;
+    right: 0px;
+    background-color: rgba(0, 0, 0, 0.418);
+
+    border-radius: 10px;
+    text-align: center;
+
+    transition: all 0.5s;
+    overflow: hidden;
+
+    z-index: 998;
+}
+
+.noteDisplay p{
+    margin: 0;
+    cursor: pointer;
+    height: 20px;
+    color: rgb(228, 228, 228);
+}
+
+.noteDisplay p:hover{
+    background-color: rgba(255, 255, 255, 0.466);
+    color: black;
+}
+
+.selected{
+    background-color: rgb(39, 39, 39);
+    color: black;
 }

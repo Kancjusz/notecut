@@ -37,6 +37,9 @@ class App extends Component
             searchEngine:"https://www.google.com",
             newTab:true,
             findShortcuts:true,
+            separateNotes:false,
+            displayNotes:true,
+            displayNotesOpen:true,
         } : JSON.parse(localStorage.getItem("settings"));
 
         let tilesDivWidth = this.getTilesDivWidth();
@@ -763,7 +766,7 @@ class App extends Component
                     </div>
                 </header>
 
-                <div style={{width:60+"%", position:"relative", left:50+"%", transform:"translate(-50%,-0%)", zIndex:10}}>
+                <div style={{width:60+"%", position:"absolute", left:50+"%", top:this.state.headerheight+25+"px", transform:"translate(-50%,-0%)", zIndex:10}}>
                     {this.state.settings.showSearchBar 
                         && <SearchBar 
                             newTab={this.state.settings.newTab} 
@@ -773,7 +776,7 @@ class App extends Component
                     />}
                 </div>
 
-                <div className="borderBox" style={{
+                {!(this.state.settings.separateNotes && this.state.settings.displayNotes) && <div className="borderBox" style={{
                     background: (this.state.settings.animate ? "0% 0% / 300% 300% " : "0% 0% / 100% 100% ") + this.state.settings.borderColor,
                     animation: this.state.settings.animate ? "animatedgradient 10s linear alternate infinite" : "none",
                 }}>
@@ -798,7 +801,7 @@ class App extends Component
                             }
                         }`}
                     </style>
-                </div>
+                </div>}
 
                 {
                     (this.state.showShortcutForm || this.state.editShortcutForm) && 
@@ -860,16 +863,58 @@ class App extends Component
                         searchEngine = {this.state.settings.searchEngine}
                         newTab = {this.state.settings.newTab}
                         findShortcuts = {this.state.settings.findShortcuts}
+                        separateNotes = {this.state.settings.separateNotes}
+                        displayNotesOpen = {this.state.settings.displayNotesOpen}
+                        displayNotes = {this.state.settings.displayNotes}
                     />
                 }
 
-                {notes}
+                {this.state.settings.displayNotes && notes}
 
                 <div 
                     className={"noFreeSpace" + (this.state.noFreeSpace ? " show" : "")} 
                     onTransitionEnd={()=>this.setState({noFreeSpace:false})}
                 >
                     <p>Wszystkie miejsca są zapełnione</p>
+                </div>
+
+                <div className="noteDisplay" style={{
+                    height:(this.state.settings.displayNotesOpen?(!this.state.settings.separateNotes ? 60 : 100):20)+"px"
+                }}>
+                    <p onClick={()=>{
+                        let newSettings = this.state.settings;
+                        newSettings.displayNotesOpen = !newSettings.displayNotesOpen;
+                        this.setState({settings: newSettings});    
+                    }}>{this.state.settings.displayNotesOpen?"▲":"▼"}</p>
+                    {!this.state.settings.separateNotes 
+                    ? <div style={{
+                        height:50+"px",
+                        width:150+"px",
+                        position:"relative",
+                        left:50+"%",
+                        transform:"translate(-50%,25%)",
+                        textAlign:"center"
+                    }}>
+                        <label style={{paddingLeft:10+"px", color:"white"}}>Show Notes</label>
+                        <input type="checkbox" style={{width:30+"px"}} defaultChecked={this.state.settings.displayNotes} checked={this.state.settings.displayNotes} onChange={(e)=>{
+                            let newSettings = this.state.settings;
+                            newSettings.displayNotes = e.target.checked;
+                            this.setState({settings: newSettings});
+                        }}/>
+                    </div> 
+                    : <div style={{height:100+"px", width:150+"px", fontSize:20+"px"}}>
+                        <p className={!this.state.settings.displayNotes ? "selected" : ""} style={{width:100+"%", padding:"10px 0"}} onClick={()=>{
+                            let newSettings = this.state.settings;
+                            newSettings.displayNotes = false;
+                            this.setState({settings: newSettings});  
+                        }}>Shortcuts</p>
+
+                        <p className={this.state.settings.displayNotes ? "selected" : ""} style={{width:100+"%", padding:"10px 0"}} onClick={()=>{
+                            let newSettings = this.state.settings;
+                            newSettings.displayNotes = true;
+                            this.setState({settings: newSettings});  
+                        }}>Notes</p>
+                    </div>}
                 </div>
             </main>
         )

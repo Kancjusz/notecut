@@ -7,10 +7,12 @@
 }
 
 .searchButtonImg{
+    position: relative;
     height: 40px;
     border-radius: 10px;
 
     transition: all 0.2s;
+    z-index: 997;
 }
 
 .searchButtonImg:hover{
@@ -19,6 +21,8 @@
 }
 
 .searchBarInput{
+    position: relative;
+
     border-radius: 5px;
     font-size: 20px;
     padding: 3px;
@@ -26,6 +30,8 @@
     width: 90%;
     height: 30px;
     float: left;
+
+    z-index: 997;
 }
 
 .searchList{
@@ -34,7 +40,7 @@
 
     width: 90%;
 
-    z-index: 50;
+    z-index: 998;
 
     background-color: white;
     padding: 3px;  

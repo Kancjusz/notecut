@@ -125,7 +125,7 @@ form{
 
     color: rgb(214, 214, 214);
 
-    z-index: 30;
+    z-index: 999;
 }
 
 input{

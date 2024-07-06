@@ -82,6 +82,8 @@ class Settings extends Component
             searchEngine:this.props.searchEngine,
             newTab:this.props.newTab,
             findShortcuts:this.props.findShortcuts,
+            separateNotes:this.props.separateNotes,
+            displayNotesOpen:this.props.displayNotesOpen
         }
 
         this.form = createRef();
@@ -138,6 +140,11 @@ class Settings extends Component
                     }}/><br/><br/>
                 </div>}
 
+                <label>Notes & Shortcuts in Separate Tabs</label><br/>
+                <input type="checkbox" defaultChecked={this.state.separateNotes} checked={this.state.separateNotes} onChange={(e)=>{
+                    this.setState({separateNotes:e.target.checked});
+                }}/><br/><br/>
+
                 <button className="defaultSettings" onClick={(e)=>{
                     e.preventDefault();
                     this.setState({
@@ -150,7 +157,9 @@ class Settings extends Component
                         showSearchBar:true,
                         searchEngine:"https://www.google.com",
                         newTab:true,
-                        findShortcuts:true
+                        findShortcuts:true,
+                        separateNotes:false,
+                        displayNotesOpen:true,
                     });
                 }}>Set to Default</button>
 
@@ -169,6 +178,9 @@ class Settings extends Component
                                 searchEngine:this.state.searchEngine,
                                 newTab:this.state.newTab,
                                 findShortcuts:this.state.findShortcuts,
+                                separateNotes:this.state.separateNotes,
+                                displayNotesOpen:this.state.displayNotesOpen,
+                                displayNotes:this.props.displayNotes
                             });
                         }
                     }>Save Settings</button>
