@@ -142,6 +142,11 @@ input[type=color]{
     transform: translate(-50%,0);
 }
 
+form input[type=checkbox]{
+    transform: translate(0%,-150%);
+    margin-bottom: 0;
+}
+
 textarea{
     width: 100%;
     height: 100px;

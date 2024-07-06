@@ -154,6 +154,8 @@ class Settings extends Component
                     this.setState({borderColor:e});
                 }}/><br/>
 
+                <hr/><br/>
+
                 <label>Show Search Bar</label><br/>
                 <input type="checkbox" defaultChecked={this.state.showSearchBar} checked={this.state.showSearchBar} onChange={(e)=>{
                     this.setState({showSearchBar:e.target.checked});
@@ -171,13 +173,17 @@ class Settings extends Component
                     <label>Search Shortcuts</label><br/>
                     <input type="checkbox" defaultChecked={this.state.findShortcuts} checked={this.state.findShortcuts} onChange={(e)=>{
                         this.setState({findShortcuts:e.target.checked});
-                    }}/><br/><br/>
+                    }}/><br/>
                 </div>}
 
+                <hr/><br/>
+
                 <label>Notes & Shortcuts in Separate Tabs</label><br/>
-                <input type="checkbox" defaultChecked={this.state.separateNotes} checked={this.state.separateNotes} onChange={(e)=>{
+                <input type="checkbox" style={{transform:"none"}} defaultChecked={this.state.separateNotes} checked={this.state.separateNotes} onChange={(e)=>{
                     this.setState({separateNotes:e.target.checked});
-                }}/><br/><br/>
+                }}/><br/>
+
+                <hr/><br/>
 
                 <button className="defaultSettings" onClick={(e)=>{
                     e.preventDefault();
