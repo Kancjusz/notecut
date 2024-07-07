@@ -38,11 +38,14 @@ class Folder extends Component{
         this.setIsOver = this.setIsOver.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
+        this.onShortcutDown = this.onShortcutDown.bind(this);
+        this.onShortcutUp = this.onShortcutUp.bind(this);
         this.onResize = this.onResize.bind(this);
         this.getTilesWindowOffset = this.getTilesWindowOffset.bind(this);
 
         this.folder = createRef();
         this.name = createRef();
+        this.pressTimer = createRef();
     }
 
     setIsOver(val)
@@ -84,11 +87,23 @@ class Folder extends Component{
         }
     }
 
-    onMouseMove(e)
+    onMouseMove(e1)
     {
+        let e = {pageX:0, pageY:0};
+
+        if(e1.type == 'touchmove'){   
+            var touch = e1.touches[0] || e1.changedTouches[0];
+            e = {pageX:touch.pageX, pageY:touch.pageY};
+        } else {
+            e = {pageX:e1.pageX, pageY:e1.pageY};
+        }
+
         let mouse = {pageX:e.pageX, pageY:e.pageY};
         this.setState({isClick:false})
         if(!this.state.mouseDown) return;
+
+        clearTimeout(this.pressTimer);
+
         if(e.pageX + this.props.width/2 > window.innerWidth)
             mouse.pageX = window.innerWidth - this.props.width/2;
         else if(e.pageX - this.props.width/2 < 0) 
@@ -102,10 +117,19 @@ class Folder extends Component{
         this.setPosition(mouse);
     }
 
-    onMouseDown(e)
+    onMouseDown(e1)
     {
-        if(e.button != 2) this.setState({showEdit:false});
-        else if(this.state.showEdit) this.setState({showEdit:false});
+        if(e1.button != 2 && e1.button != undefined) this.setState({showEdit:false});
+        else if(this.state.showEdit) this.setState({showEdit:false})
+
+        let e = {pageX:0, pageY:0, button:e1.button, detail:e1.detail};
+
+        if(e1.type == 'touchstart'){   
+            var touch = e1.touches[0] || e1.changedTouches[0];
+            e = {...e,pageX:touch.pageX, pageY:touch.pageY};
+        } else {
+            e = {...e,pageX:e1.pageX, pageY:e1.pageY};
+        }
 
         let isWidth;
         let isHeight;
@@ -140,6 +164,81 @@ class Folder extends Component{
             this.setState({showContents:false});
     }
 
+    onShortcutUp(e1,outside)
+    {
+        let e = {pageX:0, pageY:0, button:e1.button, detail:e1.detail};
+
+        if(e1.type == 'touchstart'){   
+            this.setIsOver(false); 
+            var touch = e1.touches[0] || e1.changedTouches[0];
+            e = {...e,pageX:touch.pageX, pageY:touch.pageY};
+        } else {
+            e = {...e,pageX:e1.pageX, pageY:e1.pageY};
+        }
+
+        if(this.state.isClick)
+        {
+            this.setState({
+                mouseDown:false,
+                isClick:false,
+                showContents:!this.state.showEdit,
+            });
+            this.props.isGrabbed(false);
+
+            clearTimeout(this.pressTimer);
+
+            return;
+        }
+
+        if(this.state.mouseDown)
+        {
+            if(this.state.showEdit)
+            {
+                this.props.setDropShortcutId(false,undefined,true);
+                clearTimeout(this.pressTimer);
+                return;
+            }
+
+            if(outside)
+                this.props.setDropShortcutId(false,undefined,true);
+            else
+                this.props.setDropShortcutId(false,undefined,false);
+
+        }
+        this.props.isGrabbed(false);
+        this.setState({mouseDown:false});
+    }
+
+    
+    onShortcutDown(e1)
+    {
+        let e = {pageX:0, pageY:0, button:e1.button, detail:e1.detail};
+        let isOver = false;
+
+        if(e1.type == 'touchstart'){    
+            var touch = e1.touches[0] || e1.changedTouches[0];
+            isOver = true;
+            e = {...e,pageX:touch.pageX, pageY:touch.pageY};
+        } else {
+            e = {...e,pageX:e1.pageX, pageY:e1.pageY};
+        }
+
+        if(e.button === 2 || this.state.showEdit) return;
+        this.setState({isClick:true, showEdit:false});
+        if((this.state.isOver || isOver) && !this.state.showContents)
+        {
+            this.setPosition(e)
+            this.props.isGrabbed(true);
+            this.setState({mouseDown:true});
+
+            if(e1.type == 'touchstart') 
+                this.pressTimer = window.setTimeout(() => {
+                    let mousePos = {x:this.props.width/2,y:this.props.height/2};
+                    this.setState({showEdit:true, currentMousePos:mousePos});
+                },1000);     
+        }
+    }
+
     onResize()
     {
         if(this.name.current === null) return;
@@ -150,6 +249,10 @@ class Folder extends Component{
     {
         document.addEventListener("mousemove",this.onMouseMove);
         document.addEventListener("mousedown",this.onMouseDown);
+
+        window.addEventListener("touchstart",this.onMouseDown, { passive: false });
+        window.addEventListener("touchmove",this.onMouseMove, { passive: false });
+
         window.addEventListener("resize",this.onResize);
     }
 
@@ -157,6 +260,10 @@ class Folder extends Component{
     {
         document.removeEventListener("mousemove",this.onMouseDown);
         document.removeEventListener("mousedown",this.onMouseDown);
+
+        window.removeEventListener("touchstart",this.onMouseDown);
+        window.removeEventListener("touchmove",this.onMouseMove);
+
         window.removeEventListener("resize",this.onResize);
     }
 
@@ -193,49 +300,20 @@ class Folder extends Component{
                 onMouseEnter={this.props.changeTile}
                 onMouseOver={()=>this.setIsOver(true)}
                 onMouseOut={()=>this.setIsOver(false)}
-                onMouseDown={(e)=>{
-                    if(e.button === 2 || this.state.showEdit) return;
-                    this.setState({isClick:true, showEdit:false});
-                    if(this.state.isOver && !this.state.showContents)
-                    {
-                        this.setPosition(e)
-                        this.props.isGrabbed(true);
-                        this.setState({mouseDown:true});
-                    }
-                }}
-                onMouseUp={()=>{
-                    if(this.state.isClick)
-                    {
-                        this.setState({
-                            mouseDown:false,
-                            isClick:false,
-                            showContents:true,
-                        });
-                        this.props.isGrabbed(false);
-                        return;
-                    }
-
-                    if(this.state.mouseDown)
-                    {
-                        if(outside)
-                            this.props.setDropShortcutId(false,undefined,true);
-                        else
-                            this.props.setDropShortcutId(false,undefined,false);
-                    }
-                    this.props.isGrabbed(false);
-                    this.setState({mouseDown:false});
-                }}
+                onTouchStart={this.onShortcutDown}
+                onMouseDown={this.onShortcutDown}
+                onTouchEnd={(e)=>{this.onShortcutUp(e,outside)}}
+                onMouseUp={(e)=>{this.onShortcutUp(e,outside)}}
                 
                 onContextMenu={(e)=>{
                     e.preventDefault();
-
                     if(this.state.showContents) return;
 
                     let showEdit = this.state.showEdit;
                     let offset = this.getTilesWindowOffset();
                     let mousePos = {x:e.pageX-offset.left,y:e.pageY-offset.top};
                     
-                    this.setState({showEdit:!showEdit, currentMousePos:mousePos});
+                    this.setState({showEdit:true, currentMousePos:mousePos});
                 }}
 
                 style={

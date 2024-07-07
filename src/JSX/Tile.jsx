@@ -16,6 +16,7 @@ class Tile extends Component{
         }
 
         this.onMouseMove = this.onMouseMove.bind(this);
+        this.onTouchUp = this.onTouchUp.bind(this);
         this.getTileDocumentPosition = this.getTileDocumentPosition.bind(this);
 
         this.tile = React.createRef();
@@ -36,8 +37,26 @@ class Tile extends Component{
         }
     }
 
-    onMouseMove(e)
+    onTouchUp(e)
     {
+        if(this.state.liesIn){
+            this.setState({liesIn:false});
+            this.props.changeTile();
+        }
+    }
+
+    onMouseMove(e1)
+    {
+        let e = {pageX:e1.pageX, pageY:e1.pageY};
+
+        if(e1.type == 'touchmove'){    
+            if(this.props.isGrabbed) e1.preventDefault();
+            var touch = e1.touches[0] || e1.changedTouches[0];
+            e = {pageX:touch.pageX, pageY:touch.pageY};
+        } else {
+            e = {pageX:e1.pageX, pageY:e1.pageY};
+        }
+
         if(!this.props.isGrabbed)
         {
             this.setState({liesIn:false});
@@ -58,11 +77,15 @@ class Tile extends Component{
     componentDidMount()
     {
         document.addEventListener("mousemove",this.onMouseMove);
+        document.addEventListener("touchend",this.onTouchUp, { passive: false });
+        document.addEventListener("touchmove",this.onMouseMove, { passive: false });
     }
 
     componentWillUnmount()
     {
         document.removeEventListener("mousemove",this.onMouseMove);
+        document.removeEventListener("touchup",this.onTouchUp);
+        document.removeEventListener("touchmove",this.onMouseMove);
     }
 
     render()
@@ -99,7 +122,7 @@ class Tile extends Component{
                 width:this.props.width,
                 borderRadius:tileBorder
             }} onMouseEnter={this.props.changeTile}>
-                <div ref={this.tile} className={this.state.liesIn ? "tileInside over": "tileInside"} style={ this.state.liesIn ? {
+                <div ref={this.tile} onContextMenu={(e)=>e.preventDefault()} className={this.state.liesIn ? "tileInside over": "tileInside"} style={ this.state.liesIn ? {
                     borderRadius:tileInsideBorder, 
                     height:this.props.height, width:this.props.width
                 } : {

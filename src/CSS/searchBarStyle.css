@@ -2,8 +2,6 @@
     position: relative;
     left: 50%;
     transform: translate(-50%,0%);
-
-    width: 500px;
 }
 
 .searchButtonImg{
@@ -13,6 +11,8 @@
 
     transition: all 0.2s;
     z-index: 997;
+
+    float: right;
 }
 
 .searchButtonImg:hover{
@@ -27,7 +27,6 @@
     font-size: 20px;
     padding: 3px;
 
-    width: 90%;
     height: 30px;
     float: left;
 
@@ -36,9 +35,8 @@
 
 .searchList{
     position: fixed;
-    top: 80%;
-
-    width: 90%;
+    top: 0%;
+    transform: translate(0%,60%);
 
     z-index: 998;
 

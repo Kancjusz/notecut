@@ -12,12 +12,12 @@ const EditShortcut = (props) =>{
             left: props.posX+"px"
         }}>
             
-            <div className="colorOverlay" onMouseDown={props.setEditData} style={{
+            <div className="colorOverlay" onMouseDown={props.setEditData} onTouchStart={props.setEditData} style={{
                 borderRadius: (props.doDelete ? "5px 5px 0 0" : "5px")
             }}>
                 <p>Edit</p>
             </div>
-            {props.doDelete && <div className="colorOverlay" onMouseDown={props.setDeleteData} style={{
+            {props.doDelete && <div className="colorOverlay" onTouchStart={props.setDeleteData} onMouseDown={props.setDeleteData} style={{
                 borderRadius: (props.doDelete ? "0 0 5px 5px" : "5px")
             }}>
                 <p>Delete</p>

@@ -619,8 +619,6 @@ class App extends Component
     {
         let notes = this.state.notes;
 
-        console.log(id);
-
         let originalZIndex = notes[id].zIndex;
 
         notes.forEach((e)=>{
@@ -665,14 +663,12 @@ class App extends Component
 
     getTilesDivWidth()
     {
-        return window.innerWidth < 1920 * 0.5 + 6 ? window.innerWidth - 6 : 1920 * 0.5;
+        return window.innerWidth < (1920 * 0.5 + 6) ? window.innerWidth - 6 : 1920 * 0.5;
     }
 
     updateDimensions()
     {
         let tilesDivWidth = this.getTilesDivWidth();
-
-        console.log(tilesDivWidth);
 
         this.setState({ tileWidth: tilesDivWidth/12, tilesWindowWidth: tilesDivWidth});
     }

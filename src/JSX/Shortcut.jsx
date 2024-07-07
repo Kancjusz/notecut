@@ -31,6 +31,8 @@ class Shortcut extends Component{
         this.setIsOver = this.setIsOver.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
+        this.onShortcutDown = this.onShortcutDown.bind(this);
+        this.onShortcutUp = this.onShortcutUp.bind(this);
         this.onResize = this.onResize.bind(this);
         this.getTilesWindowOffset = this.getTilesWindowOffset.bind(this);
 
@@ -56,9 +58,20 @@ class Shortcut extends Component{
         });
     }
 
-    onMouseMove(e)
+    onMouseMove(e1)
     {
+        let e = {pageX:e1.pageX, pageY:e1.pageY};
+
+        if(e1.type == 'touchmove'){    
+            if(this.state.mouseDown) e1.preventDefault();
+            var touch = e1.touches[0] || e1.changedTouches[0];
+            e = {pageX:touch.pageX, pageY:touch.pageY};
+        } else {
+            e = {pageX:e1.pageX, pageY:e1.pageY};
+        }
+
         let mouse = {pageX:e.pageX, pageY:e.pageY};
+
         this.setState({isClick:false})
         if(!this.state.mouseDown) return;
         if(e.pageX + this.props.width/2 > window.innerWidth)
@@ -80,6 +93,65 @@ class Shortcut extends Component{
         else if(this.state.showEdit) this.setState({showEdit:false});
     }
 
+    onShortcutDown(e1)
+    {
+        let e = {pageX:0, pageY:0, button:e1.button, detail:e1.detail};
+        let isOver = false;
+
+        if(e1.type == 'touchstart'){    
+            var touch = e1.touches[0] || e1.changedTouches[0];
+            isOver = true;
+            e = {...e,pageX:touch.pageX, pageY:touch.pageY};
+        } else {
+            e = {...e,pageX:e1.pageX, pageY:e1.pageY};
+        }
+
+        if(e.button === 2 || this.state.showEdit) return;
+        this.setState({isClick:true})
+        if(e.detail == 2) return;
+        if(this.state.isOver || isOver)
+        {
+            this.setPosition(e)
+            this.props.isGrabbed(true);
+            this.setState({mouseDown:true});
+        }
+    }
+
+    onShortcutUp(e1,outside)
+    {
+        let e = {pageX:0, pageY:0, button:e1.button, detail:e1.detail};
+
+        if(e1.type == 'touchstart'){   
+            this.setIsOver(false); 
+            var touch = e1.touches[0] || e1.changedTouches[0];
+            e = {...e,pageX:touch.pageX, pageY:touch.pageY};
+        } else {
+            e = {...e,pageX:e1.pageX, pageY:e1.pageY};
+        }
+
+
+        if(this.state.isClick)
+        {
+            this.setState({
+                mouseDown:false,
+                isClick:false,
+            });
+            this.props.isGrabbed(false);
+            return;
+        }
+
+        if(this.state.mouseDown)
+        {
+            if(outside)
+                this.props.setDropShortcutId(true);
+            else
+                this.props.setDropShortcutId(false);
+        }
+
+        this.props.isGrabbed(false);
+        this.setState({mouseDown:false});
+    }
+
     onResize()
     {
         if(this.name.current === null) return;
@@ -90,6 +162,10 @@ class Shortcut extends Component{
     {
         document.addEventListener("mousemove",this.onMouseMove);
         document.addEventListener("mousedown",this.onMouseDown);
+
+        window.addEventListener("touchstart",this.onMouseDown, { passive: false });
+        window.addEventListener("touchmove",this.onMouseMove, { passive: false });
+
         window.addEventListener("resize",this.onResize);
     }
 
@@ -97,6 +173,10 @@ class Shortcut extends Component{
     {
         document.removeEventListener("mousemove",this.onMouseDown);
         document.removeEventListener("mousedown",this.onMouseDown);
+
+        window.removeEventListener("touchstart",this.onMouseDown);
+        window.removeEventListener("touchmove",this.onMouseMove);
+
         window.removeEventListener("resize",this.onResize);
     }
 
@@ -132,7 +212,6 @@ class Shortcut extends Component{
 
     render()
     {
-
         const icon = "https://www.google.com/s2/favicons?sz=64&domain_url="+this.props.link;
         let link = (this.props.link.substr(0,8) === "https://" || this.props.link.substr(0,7) === "http://") 
         ? this.props.link : "https://"+this.props.link;
@@ -156,40 +235,10 @@ class Shortcut extends Component{
                 onDragStart={(e)=>{e.preventDefault();}}
                 onMouseOver={()=>this.setIsOver(true)}
                 onMouseOut={()=>this.setIsOver(false)}
-                onMouseDown={(e)=>{
-                    if(e.button === 2 || this.state.showEdit) return;
-                    this.setState({isClick:true})
-                    if(e.detail == 2) return;
-                    if(this.state.isOver)
-                    {
-                        this.setPosition(e)
-                        this.props.isGrabbed(true);
-                        this.setState({mouseDown:true});
-                    }
-
-                }}
-                onMouseUp={()=>{
-                    if(this.state.isClick)
-                    {
-                        this.setState({
-                            mouseDown:false,
-                            isClick:false,
-                        });
-                        this.props.isGrabbed(false);
-                        return;
-                    }
-
-                    if(this.state.mouseDown)
-                    {
-                        if(outside)
-                            this.props.setDropShortcutId(true);
-                        else
-                            this.props.setDropShortcutId(false);
-                    }
-
-                    this.props.isGrabbed(false);
-                    this.setState({mouseDown:false});
-                }}
+                onTouchStart={(e)=>{this.onShortcutDown(e)}}
+                onMouseDown={this.onShortcutDown}
+                onTouchEnd={(e)=>{this.onShortcutUp(e,outside)}}
+                onMouseUp={(e)=>{this.onShortcutUp(e,outside)}}
                 onClick={(e)=>{
                     if(this.state.showEdit) return;
                     if(outside)

@@ -25,17 +25,6 @@ const SearchBar = (props) =>{
         setMatches(currentMatches);
     }
 
-    const findFolderMatches = (query) =>{
-        let currentMatches = [];
-        let regExp = new RegExp(`${query}`, "g");
-
-        props.shortcuts.forEach((sc,i)=>{
-            if(sc.name.match(regExp).length > 0)
-                currentMatches.push(i);
-        });
-        setMatches(currentMatches);
-    }
-
     const refactorQuery = (query) =>{
         if(props.findShortcuts)
             findShortcutMatches(query);

@@ -89,6 +89,24 @@
     }
 }
 
+@media (min-width: 1200px){
+    .searchBar{
+        width: 500px;
+    }
+
+    .searchList,
+    .searchBarInput{
+        width: 90%;
+    }
+
+    .colorPopup{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(+50%,-50%);
+    }
+}
+
 @media (max-width: 1200px) and (min-width: 750px){
     header h1{
         font-size: 30px;
@@ -98,6 +116,22 @@
     #addNote p,
     #addShortcut p{
         font-size: 25px;
+    }
+
+    .searchBar{
+        width: 500px;
+    }
+
+    .searchList,
+    .searchBarInput{
+        width: 90%;
+    }
+
+    .colorPopup{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(+50%,-50%);
     }
 }
 
@@ -128,7 +162,7 @@
     #addFolder p,
     #addNote p,
     #addShortcut p{
-        font-size: 25px;
+        font-size: 20px;
     }
 
     #addFolder,
@@ -166,6 +200,23 @@
 
         width: 225%;
     }
+
+    .searchBar{
+        width: 300px;
+    }
+
+    .searchList,
+    .searchBarInput{
+        width: 250px;
+    }
+
+    .colorPopup{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,0%);
+
+    }
 }
 
 
@@ -175,6 +226,8 @@ body{
     font-family: Arial, Helvetica, sans-serif;
     background-color: grey;
     user-select: none;
+
+    overflow-x: hidden;
 }
 
 main{
