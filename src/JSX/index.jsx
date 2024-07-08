@@ -670,7 +670,7 @@ class App extends Component
     {
         let tilesDivWidth = this.getTilesDivWidth();
 
-        this.setState({ tileWidth: tilesDivWidth/12, tilesWindowWidth: tilesDivWidth});
+        this.setState({ tileWidth: tilesDivWidth/ (window.innerWidth <= 600 ?  6 : 12), tilesWindowWidth: tilesDivWidth, tileHeight: window.innerWidth <= 600 ? tilesDivWidth/6 : 80.4125});
     }
 
     componentDidMount()
@@ -775,9 +775,10 @@ class App extends Component
                 {!(this.state.settings.separateNotes && this.state.settings.displayNotes) && <div className="borderBox" style={{
                     background: (this.state.settings.animate ? "0% 0% / 300% 300% " : "0% 0% / 100% 100% ") + this.state.settings.borderColor,
                     animation: this.state.settings.animate ? "animatedgradient 10s linear alternate infinite" : "none",
+                    height: (window.innerWidth <= 600 ? "auto" : "644px")
                 }}>
                     <div id="tiles" style={{
-                        height:(644)+"px", 
+                        height:(window.innerWidth <= 600 ? "auto" : "644px"), 
                         width:(this.state.tilesWindowWidth)+"px",
                         background: this.state.settings.tilesColor
                     }}>

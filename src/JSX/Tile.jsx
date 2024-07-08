@@ -92,17 +92,18 @@ class Tile extends Component{
     {
         let tileBorder = "";
         let tileInsideBorder = "";
+        let widthModifier = window.innerWidth <= 600 ? 6 : 12;
         switch(this.props.id)
         {
             case 0:
                 tileBorder = "15px 0 0 0";
                 tileInsideBorder = "15px 5px 5px 5px";
                 break;
-            case 11:
+            case widthModifier-1:
                 tileBorder = "0 15px 0 0";
                 tileInsideBorder = "5px 15px 5px 5px";
                 break;
-            case 84:
+            case 96-widthModifier:
                 tileBorder = "0 0 0 15px";
                 tileInsideBorder = "5px 5px 5px 15px";
                 break;
