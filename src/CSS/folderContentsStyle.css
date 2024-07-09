@@ -38,9 +38,7 @@
 }
 
 .folderContents{
-    display: flex;
-    flex: 0 0 auto;
-    flex-wrap: wrap;
+    position: relative;
 
     padding: 5px;
 
@@ -52,6 +50,30 @@
     animation-name: folderOpen2;
     animation-duration: 0.5s;
     animation-fill-mode: forwards;
+}
+
+.folderContents .shortcut:nth-child(1){
+    position: absolute;
+    top: 0%;
+    left: 0%;
+}
+
+.folderContents .shortcut:nth-child(2){
+    position: absolute;
+    top: 0%;
+    left: 50%;
+}
+
+.folderContents .shortcut:nth-child(3){
+    position: absolute;
+    top: 50%;
+    left: 0%;
+}
+
+.folderContents .shortcut:nth-child(4){
+    position: absolute;
+    top: 50%;
+    left: 50%;
 }
 
 .folderContents > .shortcut{

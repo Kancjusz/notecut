@@ -151,6 +151,7 @@ class Tile extends Component{
                             setEditData={this.props.setEditData}
                             inFolder={false}
                             headerHeight={this.props.headerHeight}
+                            inFolderBoundries={false}
                         />
                     }
                     {

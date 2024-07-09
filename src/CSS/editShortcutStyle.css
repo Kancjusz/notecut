@@ -17,6 +17,8 @@
     animation-fill-mode: forwards;
 
     overflow: hidden;
+
+    z-index: 998;
 }
 
 .colorOverlay p{

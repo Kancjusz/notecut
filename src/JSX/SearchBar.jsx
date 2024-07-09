@@ -17,7 +17,7 @@ const SearchBar = (props) =>{
             return;
         }
 
-        let regExp = new RegExp(`${query}`, "g");
+        let regExp = new RegExp(`${query}`, "gi");
 
         props.shortcuts.forEach((sc,i)=>{
             if(sc.name.match(regExp) != null)

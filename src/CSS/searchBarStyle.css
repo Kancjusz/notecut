@@ -35,8 +35,7 @@
 
 .searchList{
     position: fixed;
-    top: 0%;
-    transform: translate(0%,60%);
+    top: 35px;
 
     z-index: 998;
 

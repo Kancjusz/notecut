@@ -14,6 +14,7 @@ class Shortcut extends Component{
             isClick:false,
             ogName:this.props.name,
             newName:this.props.name,
+            inFolderBoundries:this.props.inFolderBoundries,
 
             showEdit:false,
             currentMousePos:{
@@ -140,7 +141,7 @@ class Shortcut extends Component{
             return;
         }
 
-        if(this.state.mouseDown)
+        if(this.state.mouseDown && !this.props.inFolderBoundries)
         {
             if(outside || this.state.showEdit)
                 this.props.setDropShortcutId(true);
@@ -268,16 +269,16 @@ class Shortcut extends Component{
                         backgroundColor:this.props.color, 
                         height:this.props.height, 
                         width:this.props.width, position:"absolute", 
-                        top:(this.state.yPos ) - tilesOffset.top + "px", 
-                        left:(this.state.xPos )- tilesOffset.left + "px", 
-                        transform:"translate(-50%,-50%)" ,zIndex:5} 
+                        top:(this.state.yPos ) - (this.props.topDocumentOffset === undefined ? tilesOffset.top : this.props.topDocumentOffset) + "px", 
+                        left:(this.state.xPos )- (this.props.leftDocumentOffset === undefined ? tilesOffset.left : this.props.leftDocumentOffset) + "px", 
+                        transform:"translate(-50%,-50%)" ,zIndex: this.state.showEdit ? 997 : 5} 
                     : this.props.inFolder 
                     ? {
                         backgroundColor:this.props.color,
                         height:this.props.height+"px", 
-                        width:this.props.width+"px", top:0+"%", left:0+"%", 
-                        transform:"translate(0,0)"}  
-                    :{backgroundColor:this.props.color,height:this.props.height, width:this.props.width,zIndex:5}
+                        width:this.props.width+"px", 
+                        transform:"translate(0,0)",zIndex: this.state.showEdit ? 997 : 5}  
+                    :{backgroundColor:this.props.color,height:this.props.height, width:this.props.width,zIndex:this.state.showEdit ? 997 : 5}
                 }
             >
 

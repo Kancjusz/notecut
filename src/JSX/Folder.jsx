@@ -21,6 +21,7 @@ class Folder extends Component{
 
             isScrollHeight:false,
             isScrollWidth:false,
+            inFolderBoundries:false,
             left:0,
 
             showEdit:false,
@@ -43,6 +44,7 @@ class Folder extends Component{
         this.onShortcutUp = this.onShortcutUp.bind(this);
         this.onResize = this.onResize.bind(this);
         this.getTilesWindowOffset = this.getTilesWindowOffset.bind(this);
+        this.checkIfInFolderBounds = this.checkIfInFolderBounds.bind(this);   
 
         this.folder = createRef();
         this.name = createRef();
@@ -101,6 +103,26 @@ class Folder extends Component{
 
         let mouse = {pageX:e.pageX, pageY:e.pageY};
         this.setState({isClick:false})
+
+        let isWidth;
+        let isHeight;
+        let isLeft;
+
+        var bodyRect = document.body.getBoundingClientRect();
+        var elemRect = this.folder.current.getBoundingClientRect();
+
+        var leftOffset = elemRect.left - bodyRect.left;
+        var topOffset = elemRect.top - bodyRect.top+ (this.state.isScrollHeight && this.state.showContents ? (226-this.props.height) : 0);
+        if(this.folder.current !== null)
+        {
+            isWidth = leftOffset + 276 > window.innerWidth;
+            isHeight = topOffset + 226 > window.innerHeight;
+            isLeft = leftOffset + this.props.width - 276 < 0 && isWidth ? -(leftOffset + this.props.width - 276) : 0;
+        }
+
+        let inBounds = this.checkIfInFolderBounds(isHeight,isWidth,topOffset,leftOffset,isLeft,e);
+        this.setState({inFolderBoundries:!inBounds.checkHeight && !inBounds.checkWidth});
+
         if(!this.state.mouseDown) return;
 
         clearTimeout(this.pressTimer);
@@ -116,6 +138,24 @@ class Folder extends Component{
             mouse.pageY = this.props.headerHeight + this.props.height/2;
 
         this.setPosition(mouse);
+    }
+
+    checkIfInFolderBounds(isHeight,isWidth,topOffset,leftOffset,isLeft,e)
+    {
+        let checkHeight = false;
+        let checkWidth = false;
+
+        if(!isHeight)
+            checkHeight = e.pageY < topOffset || e.pageY > topOffset + 226; 
+        else
+            checkHeight = e.pageY < topOffset - 226 + this.props.height || e.pageY > topOffset + this.props.height;
+
+        if(!isWidth)
+            checkWidth = e.pageX < leftOffset || e.pageX > leftOffset + 276;
+        else
+            checkWidth = e.pageX < leftOffset - 276 + this.props.width + isLeft || e.pageX > leftOffset + this.props.width + isLeft;
+
+        return {checkHeight:checkHeight, checkWidth:checkWidth};
     }
 
     onMouseDown(e1)
@@ -153,21 +193,12 @@ class Folder extends Component{
         let folder = document.getElementsByClassName("folder")[0];
         if(folder === undefined) return;
 
-        let checkHeight = false;
-        let checkWidth = false;
+        let inBounds = this.checkIfInFolderBounds(isHeight,isWidth,topOffset,leftOffset,isLeft,e);
 
-        if(!isHeight)
-            checkHeight = e.pageY < topOffset || e.pageY > topOffset + 226; 
-        else
-            checkHeight = e.pageY < topOffset - 226 + this.props.height || e.pageY > topOffset + this.props.height;
-
-        if(!isWidth)
-            checkWidth = e.pageX < leftOffset || e.pageX > leftOffset + 276;
-        else
-            checkWidth = e.pageX < leftOffset - 276 + this.props.width + isLeft || e.pageX > leftOffset + this.props.width + isLeft;
-
-        if(checkHeight || checkWidth)
+        if(inBounds.checkHeight || inBounds.checkWidth)
             this.setState({showContents:false});
+
+        this.setState({inFolderBoundries:!inBounds.checkHeight && !inBounds.checkWidth});
     }
 
     onShortcutUp(e1,outside)
@@ -320,7 +351,6 @@ class Folder extends Component{
                     if(this.state.showContents) return;
 
                     let mousePos = {x:0,y:0};
-                    console.log(mousePos);
                     
                     this.setState({showEdit:true, currentMousePos:mousePos});
                 }}
@@ -349,6 +379,7 @@ class Folder extends Component{
                     toTop={this.state.isScrollHeight}
                     toRight={this.state.left}
                     setEditData={this.props.setEditData}
+                    inFolderBoundries={this.state.inFolderBoundries}
                 />}
 
                 {!this.state.showContents && <img src={folderImg}/>}
