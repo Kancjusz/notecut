@@ -43,6 +43,7 @@ class App extends Component
         } : JSON.parse(localStorage.getItem("settings"));
 
         let tilesDivWidth = this.getTilesDivWidth();
+        console.log(tilesDivWidth);
 
         this.state = {
             shortcuts:shortcuts,
@@ -50,9 +51,9 @@ class App extends Component
             tiles:tiles,
             notes:notes,
 
-            tileHeight:((919)*0.7)/8,
-            tileWidth:tilesDivWidth/12,
-            tilesWindowWidth:1920*0.5,
+            tileHeight:window.innerWidth <= 600 ? tilesDivWidth/6 : 80.4125,
+            tileWidth:tilesDivWidth/ (window.innerWidth <= 600 ?  6 : 12),
+            tilesWindowWidth:tilesDivWidth,
             headerheight:137,
 
             showShortcutForm:false,
@@ -784,20 +785,6 @@ class App extends Component
                     }}>
                         {tileList}
                     </div>
-                    <style>
-                        {`body{
-                            background: ${this.state.settings.contentColor};
-                        }
-
-                        @keyframes animatedgradient {
-                            0% {
-                                background-position: 0% ;
-                            }
-                            100% {
-                                background-position: 100%;
-                            }
-                        }`}
-                    </style>
                 </div>}
 
                 {
@@ -872,7 +859,7 @@ class App extends Component
                     className={"noFreeSpace" + (this.state.noFreeSpace ? " show" : "")} 
                     onTransitionEnd={()=>this.setState({noFreeSpace:false})}
                 >
-                    <p>Wszystkie miejsca są zapełnione</p>
+                    <p>There is no empty tile!</p>
                 </div>
 
                 <div className="noteDisplay" style={{
@@ -913,6 +900,21 @@ class App extends Component
                         }}>Notes</p>
                     </div>}
                 </div>
+
+                <style>
+                    {`body{
+                        background: ${this.state.settings.contentColor};
+                    }
+
+                    @keyframes animatedgradient {
+                        0% {
+                            background-position: 0% ;
+                        }
+                        100% {
+                            background-position: 100%;
+                        }
+                    }`}
+                </style>
             </main>
         )
     }

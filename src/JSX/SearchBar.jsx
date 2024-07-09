@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import searchImg from "../img/search.png";
+import validator from "validator";
 import "../CSS/searchBarStyle.css";
 
 const SearchBar = (props) =>{
@@ -35,7 +36,10 @@ const SearchBar = (props) =>{
     }
 
     const openPage = () =>{
-        window.open(props.engine+"/search?q="+query, props.newTab ? "_blank" : "_self");
+        if(validator.isURL(query))
+            window.open("https://"+query, props.newTab ? "_blank" : "_self");
+        else
+            window.open(props.engine+"/search?q="+query, props.newTab ? "_blank" : "_self");
     }
 
     return(

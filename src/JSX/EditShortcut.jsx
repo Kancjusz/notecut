@@ -7,9 +7,9 @@ const EditShortcut = (props) =>{
         <div className="editBox" style={{
             backgroundColor:props.color,
             opacity:1,
-            position:"absolute",
+            position:props.doDelete ? "absolute" : "relative",
             top: props.posY+"px",
-            left: props.posX+"px"
+            left: props.posX+"px",
         }}>
             
             <div className="colorOverlay" onMouseDown={props.setEditData} onTouchStart={props.setEditData} style={{

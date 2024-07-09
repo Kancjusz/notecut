@@ -142,7 +142,7 @@ class Shortcut extends Component{
 
         if(this.state.mouseDown)
         {
-            if(outside)
+            if(outside || this.state.showEdit)
                 this.props.setDropShortcutId(true);
             else
                 this.props.setDropShortcutId(false);
@@ -249,15 +249,12 @@ class Shortcut extends Component{
                     e.preventDefault();
 
                     let showEdit = this.state.showEdit;
-                    let offset = this.getTilesWindowOffset();
 
-                    let mousePos = {x:e.pageX-offset.left,y:e.pageY-offset.top};
+                    let mousePos = {x:0,y:0};
+
                     if(this.props.inFolder)
                     {
-                        let offsetTop = e.currentTarget.offsetTop;
-                        let offsetLeft = e.currentTarget.offsetLeft;
-
-                        mousePos = {x: mousePos.x-offsetLeft, y: mousePos.y - offsetTop};
+                        mousePos = {x:0,y:20}
                     }
                     
                     this.setState({showEdit:!showEdit, currentMousePos:mousePos});

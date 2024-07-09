@@ -33,10 +33,10 @@ class FolderContents extends Component
 
     render()
     {
-        let tileWidth = Math.floor((window.innerWidth < 1920 * 0.5 ? window.innerWidth : 1920 * 0.5)/12);
-        let tileHeight = Math.floor((window.innerHeight*0.7)/8);
+        let tileWidth = this.props.width;
+        let tileHeight = this.props.height;
         let topOffset = this.props.toTop ? 226-tileHeight : 0;
-        let leftOffset = this.props.toLeft ? 276-tileWidth : 0;
+        let leftOffset = (this.props.toLeft ? 276-tileWidth - this.props.toRight : 0);
 
         let marginAnimation = "0.5s ease-in-out 0s 1 normal forwards running folderOpen";
         marginAnimation += this.props.toTop ? ", 0.5s ease-in-out 0s 1 normal none running folderOpenMarginTop" : "";
@@ -70,14 +70,24 @@ class FolderContents extends Component
                 marginTop:-topOffset+"px", marginLeft:-leftOffset+"px",
                 animation: marginAnimation
             }}>
-                <div className={"arrow"+(this.state.pageId == 0 ? "NoHover": "")} onClick={this.pageLeft}><p>{this.state.pageId != 0 ? "<" : ""}</p></div>
+                <div className={"arrow"+(this.state.pageId == 0 ? "NoHover": "")} onClick={this.pageLeft}><p style={{
+                    backgroundColor:"white",
+                    borderRadius:15+"px",
+                    width:25+"px",
+                    marginLeft:5+"px"
+                }}>{this.state.pageId != 0 ? "<" : ""}</p></div>
                 <div className="folderContents">
                     {pages[this.state.pageId]}
                 </div>
                 <div 
                 className={
                     "arrow"+(this.state.pageId == pages.length-1 || pages.length == 0 ? "NoHover": "")
-                } onClick={this.pageRight}><p>{this.state.pageId != pages.length-1 && pages.length != 0 ? ">" : ""}</p></div>
+                } onClick={this.pageRight}><p style={{
+                    backgroundColor:"white",
+                    borderRadius:15+"px",
+                    width:25+"px",
+                    textAlign:"center"
+                }}>{this.state.pageId != pages.length-1 && pages.length != 0 ? ">" : ""}</p></div>
 
                 
                 <div className="folderAnimationDiv" style={{

@@ -21,6 +21,7 @@ class Folder extends Component{
 
             isScrollHeight:false,
             isScrollWidth:false,
+            left:0,
 
             showEdit:false,
             currentMousePos:{
@@ -133,14 +134,19 @@ class Folder extends Component{
 
         let isWidth;
         let isHeight;
+        let isLeft;
 
-        var leftOffset = this.props.offset.left;
-        var topOffset = this.props.offset.top+ (this.state.isScrollHeight ? (226-this.props.height) : 0);
+        var bodyRect = document.body.getBoundingClientRect();
+        var elemRect = this.folder.current.getBoundingClientRect();
+
+        var leftOffset = elemRect.left - bodyRect.left;
+        var topOffset = elemRect.top - bodyRect.top+ (this.state.isScrollHeight && this.state.showContents ? (226-this.props.height) : 0);
         if(this.folder.current !== null)
         {
             isWidth = leftOffset + 276 > window.innerWidth;
             isHeight = topOffset + 226 > window.innerHeight;
-            this.setState({isScrollHeight: isHeight, isScrollWidth: isWidth});
+            isLeft = leftOffset + this.props.width - 276 < 0 && isWidth ? -(leftOffset + this.props.width - 276) : 0;
+            this.setState({isScrollHeight: isHeight, isScrollWidth: isWidth, left:isLeft});
         }
 
         if(!this.state.showContents) return;
@@ -151,15 +157,15 @@ class Folder extends Component{
         let checkWidth = false;
 
         if(!isHeight)
-            checkHeight = e.pageY < topOffset || e.pageY > topOffset + folder.offsetHeight; 
+            checkHeight = e.pageY < topOffset || e.pageY > topOffset + 226; 
         else
-            checkHeight = e.pageY < topOffset - folder.offsetHeight + this.folder.current.offsetHeight || e.pageY > topOffset + this.folder.current.offsetHeight;
+            checkHeight = e.pageY < topOffset - 226 + this.props.height || e.pageY > topOffset + this.props.height;
 
         if(!isWidth)
-            checkWidth = e.pageX < leftOffset || e.pageX > leftOffset + folder.offsetWidth;
+            checkWidth = e.pageX < leftOffset || e.pageX > leftOffset + 276;
         else
-            checkWidth = e.pageX < leftOffset - folder.offsetWidth + this.folder.current.offsetWidth || e.pageX > leftOffset + this.folder.current.offsetWidth;
-        
+            checkWidth = e.pageX < leftOffset - 276 + this.props.width + isLeft || e.pageX > leftOffset + this.props.width + isLeft;
+
         if(checkHeight || checkWidth)
             this.setState({showContents:false});
     }
@@ -195,6 +201,8 @@ class Folder extends Component{
             if(this.state.showEdit)
             {
                 this.props.setDropShortcutId(false,undefined,true);
+                this.props.isGrabbed(false);
+                this.setState({mouseDown:false});
                 clearTimeout(this.pressTimer);
                 return;
             }
@@ -233,7 +241,9 @@ class Folder extends Component{
 
             if(e1.type == 'touchstart') 
                 this.pressTimer = window.setTimeout(() => {
-                    let mousePos = {x:this.props.width/2,y:this.props.height/2};
+                    this.props.setDropShortcutId(false,undefined,true);
+                    let offset = this.getTilesWindowOffset()
+                    let mousePos = {x:this.props.width/2-offset.left,y:this.props.height/2-offset.top};
                     this.setState({showEdit:true, currentMousePos:mousePos});
                 },1000);     
         }
@@ -258,7 +268,7 @@ class Folder extends Component{
 
     componentWillUnmount()
     {
-        document.removeEventListener("mousemove",this.onMouseDown);
+        document.removeEventListener("mousemove",this.onMouseMove);
         document.removeEventListener("mousedown",this.onMouseDown);
 
         window.removeEventListener("touchstart",this.onMouseDown);
@@ -309,9 +319,8 @@ class Folder extends Component{
                     e.preventDefault();
                     if(this.state.showContents) return;
 
-                    let showEdit = this.state.showEdit;
-                    let offset = this.getTilesWindowOffset();
-                    let mousePos = {x:e.pageX-offset.left,y:e.pageY-offset.top};
+                    let mousePos = {x:0,y:0};
+                    console.log(mousePos);
                     
                     this.setState({showEdit:true, currentMousePos:mousePos});
                 }}
@@ -330,7 +339,7 @@ class Folder extends Component{
             >
                 {this.state.showContents && <FolderContents
                     shortcuts={this.props.shortcuts}
-                    setDropShortcutId={(inFolder,id,autoChangeTile)=>{this.props.setDropShortcutId(inFolder,id,autoChangeTile); this.setState({showContents:false})}}
+                    setDropShortcutId={(inFolder,id,autoChangeTile)=>{this.props.setDropShortcutId(inFolder,id,autoChangeTile); this.setState({showContents:autoChangeTile})}}
                     height={this.props.height}
                     width={this.props.width}
                     offset={this.props.offset}
@@ -338,6 +347,7 @@ class Folder extends Component{
                     isGrabbed={(e)=>this.props.isGrabbed(e)}
                     toLeft={this.state.isScrollWidth}
                     toTop={this.state.isScrollHeight}
+                    toRight={this.state.left}
                     setEditData={this.props.setEditData}
                 />}
 
